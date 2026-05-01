@@ -1328,42 +1328,58 @@ function toggleSearch() {
 }
 
 function performWebSearch(query, callback) {
-  // Use Wikipedia API (free, CORS-enabled)
-  var wikiUrl = 'https://zh.wikipedia.org/w/api.php?action=query&list=search&srsearch=' + encodeURIComponent(query) + '&format=json&origin=*&srlimit=3';
-  fetch(wikiUrl)
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      if (!data.query || !data.query.search || data.query.search.length === 0) {
-        callback(null);
-        return;
-      }
-      // Get the top result's page content
-      var top = data.query.search[0];
-      var pageUrl = 'https://zh.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=1&explaintext=1&titles=' + encodeURIComponent(top.title) + '&format=json&origin=*&exsentences=5';
-      return fetch(pageUrl).then(function(r2) { return r2.json(); }).then(function(pageData) {
-        var pages = pageData.query && pageData.query.pages;
-        var extract = '';
-        for (var pid in pages) {
-          if (pages[pid].extract) { extract = pages[pid].extract; break; }
+  // 支持直连 + CORS代理（解决中国大陆网络屏蔽 Wikipedia 问题）
+  var corsProxies = [
+    '',  // 直连优先
+    'https://api.allorigins.win/raw?url=',
+    'https://corsproxy.io/?'
+  ];
+  var searchDone = false;
+
+  function tryProxy(idx) {
+    if (idx >= corsProxies.length) { callback(null); return; }
+    var proxy = corsProxies[idx];
+    var wikiUrl = 'https://zh.wikipedia.org/w/api.php?action=query&list=search&srsearch=' + encodeURIComponent(query) + '&format=json&origin=*&srlimit=3';
+    var fetchUrl = proxy ? (proxy + encodeURIComponent(wikiUrl)) : wikiUrl;
+    // allorigins 返回的是纯文本，需要解析
+    var isProxy = proxy.indexOf('allorigins') >= 0;
+
+    fetch(fetchUrl, { signal: AbortSignal.timeout(8000) })
+      .then(function(r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return isProxy ? r.text() : r.json();
+      })
+      .then(function(data) {
+        if (typeof data === 'string') data = JSON.parse(data);
+        if (!data.query || !data.query.search || data.query.search.length === 0) {
+          tryProxy(idx + 1); return;
         }
-        var resultText = '**🌐 联网搜索结果：**\n\n';
-        resultText += '**来源：** 维基百科\n';
-        resultText += '**词条：** ' + top.title + '\n\n';
-        if (extract) {
-          resultText += extract.substring(0, 500) + (extract.length > 500 ? '...\n\n' : '\n\n');
-        }
-        resultText += '**其他相关结果：**\n';
-        for (var i = 1; i < Math.min(data.query.search.length, 3); i++) {
-          resultText += '- ' + data.query.search[i].title + '\n';
-        }
-        resultText += '\n请基于以上搜索结果回答用户问题。';
-        callback(resultText);
-      });
-    })
-    .catch(function(err) {
-      console.error('Web search error:', err);
-      callback(null);
-    });
+        var top = data.query.search[0];
+        var pageUrl = 'https://zh.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=1&explaintext=1&titles=' + encodeURIComponent(top.title) + '&format=json&origin=*&exsentences=5';
+        var fetchPageUrl = proxy ? (proxy + encodeURIComponent(pageUrl)) : pageUrl;
+        return fetch(fetchPageUrl, { signal: AbortSignal.timeout(8000) })
+          .then(function(r2) { return isProxy ? r2.text().then(JSON.parse) : r2.json(); })
+          .then(function(pageData) {
+            var pages = pageData.query && pageData.query.pages;
+            var extract = '';
+            for (var pid in pages) { if (pages[pid].extract) { extract = pages[pid].extract; break; } }
+            var resultText = '**🌐 联网搜索结果：**\n\n';
+            resultText += '**来源：** 维基百科\n';
+            resultText += '**词条：** ' + top.title + '\n\n';
+            if (extract) {
+              resultText += extract.substring(0, 500) + (extract.length > 500 ? '...\n\n' : '\n\n');
+            }
+            resultText += '**其他相关结果：**\n';
+            for (var i = 1; i < Math.min(data.query.search.length, 3); i++) {
+              resultText += '- ' + data.query.search[i].title + '\n';
+            }
+            resultText += '\n请基于以上搜索结果回答用户问题。';
+            callback(resultText);
+          });
+      })
+      .catch(function() { tryProxy(idx + 1); });
+  }
+  tryProxy(0);
 }
 
 function streamChat(text, hasSearch) {
