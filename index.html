@@ -1328,98 +1328,91 @@ function toggleSearch() {
 }
 
 function performWebSearch(query, callback) {
-  // 多搜索源：DuckDuckGo（免费CORS友好）→ Bing（国际版）→ Wikipedia（备用）
-  // 优先使用无需API Key的免费搜索源
+  // 多搜索源：DuckDuckGo → Bing RSS → 提示用户
+  // 注：中国大陆网络环境下多数搜索API被屏蔽，DDG和Wikipedia均需VPN
 
   function tryDDG() {
     var ddgUrl = 'https://api.duckduckgo.com/?q=' + encodeURIComponent(query) + '&format=json&no_html=1&skip_disambig=1';
-    fetch(ddgUrl, { signal: AbortSignal.timeout(8000) })
+    fetch(ddgUrl, { signal: AbortSignal.timeout(6000) })
       .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
       .then(function(data) {
         var resultText = '';
-        var hasContent = false;
+        var has = false;
         if (data.AbstractText) {
           resultText = '**🌐 联网搜索结果（DuckDuckGo）：**\n\n';
           resultText += '**摘要：** ' + data.AbstractText.substring(0, 600) + '\n\n';
           if (data.AbstractSource) resultText += '**来源：** ' + data.AbstractSource + '\n';
           if (data.AbstractURL) resultText += '**链接：** ' + data.AbstractURL + '\n\n';
-          hasContent = true;
+          has = true;
         }
         if (data.RelatedTopics && data.RelatedTopics.length > 0) {
-          if (!hasContent) resultText = '**🌐 联网搜索结果（DuckDuckGo）：**\n\n';
+          if (!has) resultText = '**🌐 联网搜索结果（DuckDuckGo）：**\n\n';
           resultText += '**相关话题：**\n';
           for (var i = 0; i < Math.min(data.RelatedTopics.length, 5); i++) {
             var t = data.RelatedTopics[i];
             if (t.Text) resultText += '- ' + t.Text.substring(0, 100) + '\n';
           }
-          hasContent = true;
+          has = true;
         }
-        if (hasContent) {
-          resultText += '\n请基于以上搜索结果回答用户问题。';
-          callback(resultText);
-        } else {
-          tryBing(query, callback);
-        }
+        if (has) { resultText += '\n请基于以上搜索结果回答用户问题。'; callback(resultText); }
+        else { tryBingRSS(query, callback); }
       })
-      .catch(function() { tryBing(query, callback); });
+      .catch(function() { tryBingRSS(query, callback); });
   }
 
-  function tryBing(query, callback) {
-    // Bing 搜索通过 CORS 代理访问（Bing 国际版在中国可达，但浏览器有CORS限制）
-    var bingUrl = 'https://www.bing.com/search?q=' + encodeURIComponent(query) + '&format=rss';
-    var proxies = ['https://api.allorigins.win/raw?url=', 'https://corsproxy.io/?'];
+  function tryBingRSS(query, callback) {
+    // Bing RSS 搜索（部分CORS代理可能可用）
+    var targets = [
+      'https://www.bing.com/search?q=' + encodeURIComponent(query) + '&format=rss',
+      'https://api.allorigins.win/raw?url=' + encodeURIComponent('https://www.bing.com/search?q=' + encodeURIComponent(query) + '&format=rss'),
+      'https://corsproxy.io/?' + encodeURIComponent('https://www.bing.com/search?q=' + encodeURIComponent(query) + '&format=rss')
+    ];
     function tryNext(idx) {
-      if (idx >= proxies.length) { tryWikipedia(query, callback); return; }
-      var fetchUrl = proxies[idx] + encodeURIComponent(bingUrl);
-      fetch(fetchUrl, { signal: AbortSignal.timeout(8000) })
-        .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
-        .then(function(html) {
-          // 简单解析 Bing RSS 结果
-          var m = html.match(/<item>[\s\S]*?<title>([\s\S]*?)<\/title>[\s\S]*?<description>([\s\S]*?)<\/description>/i);
+      if (idx >= targets.length) { callback(null); return; }
+      fetch(targets[idx], { signal: AbortSignal.timeout(6000) })
+        .then(function(r) { if (!r.ok) throw new Error(); return r.text(); })
+        .then(function(xml) {
+          var m = xml.match(/<item>[\s\S]*?<title>(.*?)<\/title>/i);
           if (m && m[1]) {
             var resultText = '**🌐 联网搜索结果（Bing）：**\n\n';
             resultText += '**标题：** ' + m[1].replace(/<!\[CDATA\[|\]\]>/g, '').trim() + '\n\n';
-            if (m[2]) resultText += '**摘要：** ' + m[2].replace(/<!\[CDATA\[|\]\]>/g, '').substring(0, 400) + '\n\n';
+            var desc = xml.match(/<description>(.*?)<\/description>/i);
+            if (desc && desc[1]) resultText += '**摘要：** ' + desc[1].replace(/<!\[CDATA\[|\]\]>/g, '').substring(0, 400) + '\n\n';
             resultText += '\n请基于以上搜索结果回答用户问题。';
             callback(resultText);
-          } else {
-            tryNext(idx + 1);
-          }
+          } else { tryNext(idx + 1); }
         })
         .catch(function() { tryNext(idx + 1); });
     }
     tryNext(0);
   }
 
-  function tryWikipedia(query, callback) {
-    var wikiUrl = 'https://zh.wikipedia.org/w/api.php?action=query&list=search&srsearch=' + encodeURIComponent(query) + '&format=json&origin=*&srlimit=3';
-    fetch(wikiUrl, { signal: AbortSignal.timeout(8000) })
-      .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-      .then(function(data) {
-        if (!data.query || !data.query.search || data.query.search.length === 0) { callback(null); return; }
-        var top = data.query.search[0];
-        var pageUrl = 'https://zh.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=1&explaintext=1&titles=' + encodeURIComponent(top.title) + '&format=json&origin=*&exsentences=5';
-        return fetch(pageUrl, { signal: AbortSignal.timeout(8000) })
-          .then(function(r2) { if (!r2.ok) throw new Error(); return r2.json(); })
-          .then(function(pageData) {
-            var pages = pageData.query && pageData.query.pages;
-            var extract = '';
-            for (var pid in pages) { if (pages[pid].extract) { extract = pages[pid].extract; break; } }
-            var resultText = '**🌐 联网搜索结果（维基百科）：**\n\n';
-            resultText += '**词条：** ' + top.title + '\n\n';
-            if (extract) resultText += extract.substring(0, 500) + (extract.length > 500 ? '...\n\n' : '\n\n');
-            resultText += '**其他相关：**\n';
-            for (var i = 1; i < Math.min(data.query.search.length, 3); i++) {
-              resultText += '- ' + data.query.search[i].title + '\n';
-            }
-            resultText += '\n请基于以上搜索结果回答用户问题。';
-            callback(resultText);
-          });
-      })
-      .catch(function() { callback(null); });
+  function showCorsHelp() {
+    // 所有搜索源都失败，给出友好提示
+    var help = '**🌐 联网搜索暂不可用**\n\n';
+    help += '**原因：** 当前网络环境无法访问搜索API（中国大陆网络限制）\n\n';
+    help += '**解决方案：**\n';
+    help += '1. 🔑 开启VPN后再使用搜索功能\n';
+    help += '2. 📱 手机端可配合VPN工具使用\n';
+    help += '3. 💬 直接对话（AI已有丰富知识库，无需搜索也能回答大部分问题）\n\n';
+    help += '搜索功能需要访问 DuckDuckGo 或 Wikipedia，请检查网络连接后重试。';
+    origCallback(help);
   }
 
+  // 全局超时保护：所有源都失败时调用 showCorsHelp
+  var done = false;
+  var origCallback = callback;
+  callback = function(result) {
+    if (done) return;
+    done = true;
+    if (result === null) { showCorsHelp(); } else { origCallback(result); }
+  };
+
   tryDDG();
+  // 8秒后强制显示帮助（防止所有请求挂起）
+  setTimeout(function() {
+    if (!done) { done = true; showCorsHelp(); }
+  }, 8000);
 }
 
 function streamChat(text, hasSearch) {
