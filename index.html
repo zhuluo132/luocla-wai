@@ -1328,48 +1328,87 @@ function toggleSearch() {
 }
 
 function performWebSearch(query, callback) {
-  // 支持直连 + CORS代理（解决中国大陆网络屏蔽 Wikipedia 问题）
-  var corsProxies = [
-    '',  // 直连优先
-    'https://api.allorigins.win/raw?url=',
-    'https://corsproxy.io/?'
-  ];
-  var searchDone = false;
+  // 多搜索源：DuckDuckGo（免费CORS友好）→ Bing（国际版）→ Wikipedia（备用）
+  // 优先使用无需API Key的免费搜索源
 
-  function tryProxy(idx) {
-    if (idx >= corsProxies.length) { callback(null); return; }
-    var proxy = corsProxies[idx];
-    var wikiUrl = 'https://zh.wikipedia.org/w/api.php?action=query&list=search&srsearch=' + encodeURIComponent(query) + '&format=json&origin=*&srlimit=3';
-    var fetchUrl = proxy ? (proxy + encodeURIComponent(wikiUrl)) : wikiUrl;
-    // allorigins 返回的是纯文本，需要解析
-    var isProxy = proxy.indexOf('allorigins') >= 0;
-
-    fetch(fetchUrl, { signal: AbortSignal.timeout(8000) })
-      .then(function(r) {
-        if (!r.ok) throw new Error('HTTP ' + r.status);
-        return isProxy ? r.text() : r.json();
-      })
+  function tryDDG() {
+    var ddgUrl = 'https://api.duckduckgo.com/?q=' + encodeURIComponent(query) + '&format=json&no_html=1&skip_disambig=1';
+    fetch(ddgUrl, { signal: AbortSignal.timeout(8000) })
+      .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
       .then(function(data) {
-        if (typeof data === 'string') data = JSON.parse(data);
-        if (!data.query || !data.query.search || data.query.search.length === 0) {
-          tryProxy(idx + 1); return;
+        var resultText = '';
+        var hasContent = false;
+        if (data.AbstractText) {
+          resultText = '**🌐 联网搜索结果（DuckDuckGo）：**\n\n';
+          resultText += '**摘要：** ' + data.AbstractText.substring(0, 600) + '\n\n';
+          if (data.AbstractSource) resultText += '**来源：** ' + data.AbstractSource + '\n';
+          if (data.AbstractURL) resultText += '**链接：** ' + data.AbstractURL + '\n\n';
+          hasContent = true;
         }
+        if (data.RelatedTopics && data.RelatedTopics.length > 0) {
+          if (!hasContent) resultText = '**🌐 联网搜索结果（DuckDuckGo）：**\n\n';
+          resultText += '**相关话题：**\n';
+          for (var i = 0; i < Math.min(data.RelatedTopics.length, 5); i++) {
+            var t = data.RelatedTopics[i];
+            if (t.Text) resultText += '- ' + t.Text.substring(0, 100) + '\n';
+          }
+          hasContent = true;
+        }
+        if (hasContent) {
+          resultText += '\n请基于以上搜索结果回答用户问题。';
+          callback(resultText);
+        } else {
+          tryBing(query, callback);
+        }
+      })
+      .catch(function() { tryBing(query, callback); });
+  }
+
+  function tryBing(query, callback) {
+    // Bing 搜索通过 CORS 代理访问（Bing 国际版在中国可达，但浏览器有CORS限制）
+    var bingUrl = 'https://www.bing.com/search?q=' + encodeURIComponent(query) + '&format=rss';
+    var proxies = ['https://api.allorigins.win/raw?url=', 'https://corsproxy.io/?'];
+    function tryNext(idx) {
+      if (idx >= proxies.length) { tryWikipedia(query, callback); return; }
+      var fetchUrl = proxies[idx] + encodeURIComponent(bingUrl);
+      fetch(fetchUrl, { signal: AbortSignal.timeout(8000) })
+        .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+        .then(function(html) {
+          // 简单解析 Bing RSS 结果
+          var m = html.match(/<item>[\s\S]*?<title>([\s\S]*?)<\/title>[\s\S]*?<description>([\s\S]*?)<\/description>/i);
+          if (m && m[1]) {
+            var resultText = '**🌐 联网搜索结果（Bing）：**\n\n';
+            resultText += '**标题：** ' + m[1].replace(/<!\[CDATA\[|\]\]>/g, '').trim() + '\n\n';
+            if (m[2]) resultText += '**摘要：** ' + m[2].replace(/<!\[CDATA\[|\]\]>/g, '').substring(0, 400) + '\n\n';
+            resultText += '\n请基于以上搜索结果回答用户问题。';
+            callback(resultText);
+          } else {
+            tryNext(idx + 1);
+          }
+        })
+        .catch(function() { tryNext(idx + 1); });
+    }
+    tryNext(0);
+  }
+
+  function tryWikipedia(query, callback) {
+    var wikiUrl = 'https://zh.wikipedia.org/w/api.php?action=query&list=search&srsearch=' + encodeURIComponent(query) + '&format=json&origin=*&srlimit=3';
+    fetch(wikiUrl, { signal: AbortSignal.timeout(8000) })
+      .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function(data) {
+        if (!data.query || !data.query.search || data.query.search.length === 0) { callback(null); return; }
         var top = data.query.search[0];
         var pageUrl = 'https://zh.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=1&explaintext=1&titles=' + encodeURIComponent(top.title) + '&format=json&origin=*&exsentences=5';
-        var fetchPageUrl = proxy ? (proxy + encodeURIComponent(pageUrl)) : pageUrl;
-        return fetch(fetchPageUrl, { signal: AbortSignal.timeout(8000) })
-          .then(function(r2) { return isProxy ? r2.text().then(JSON.parse) : r2.json(); })
+        return fetch(pageUrl, { signal: AbortSignal.timeout(8000) })
+          .then(function(r2) { if (!r2.ok) throw new Error(); return r2.json(); })
           .then(function(pageData) {
             var pages = pageData.query && pageData.query.pages;
             var extract = '';
             for (var pid in pages) { if (pages[pid].extract) { extract = pages[pid].extract; break; } }
-            var resultText = '**🌐 联网搜索结果：**\n\n';
-            resultText += '**来源：** 维基百科\n';
+            var resultText = '**🌐 联网搜索结果（维基百科）：**\n\n';
             resultText += '**词条：** ' + top.title + '\n\n';
-            if (extract) {
-              resultText += extract.substring(0, 500) + (extract.length > 500 ? '...\n\n' : '\n\n');
-            }
-            resultText += '**其他相关结果：**\n';
+            if (extract) resultText += extract.substring(0, 500) + (extract.length > 500 ? '...\n\n' : '\n\n');
+            resultText += '**其他相关：**\n';
             for (var i = 1; i < Math.min(data.query.search.length, 3); i++) {
               resultText += '- ' + data.query.search[i].title + '\n';
             }
@@ -1377,9 +1416,10 @@ function performWebSearch(query, callback) {
             callback(resultText);
           });
       })
-      .catch(function() { tryProxy(idx + 1); });
+      .catch(function() { callback(null); });
   }
-  tryProxy(0);
+
+  tryDDG();
 }
 
 function streamChat(text, hasSearch) {
