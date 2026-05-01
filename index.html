@@ -1,0 +1,1892 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="format-detection" content="telephone=no">
+<title>LuoCla Wai V3.2 Ultra</title>
+<style>
+:root {
+  --bg: #0d1117; --bg2: #0a0e14; --bg3: #1a1f2e;
+  --bg-input: #161b22; --bg-user: #1f3a5f; --bg-ai: #131921;
+  --bg-code: #0b0f15; --bg-card: #151b25; --bg-hover: #21262d;
+  --fg: #e6edf3; --fg2: #8b949e; --fg-ai: #d0d7de;
+  --accent: #58a6ff; --accent2: #bc8cff; --accent3: #3fb950; --accent4: #d29922; --accent5: #f85149; --accent6: #39d2c0;
+  --border: #30363d; --radius: 14px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --glow: rgba(88, 166, 255, 0.15);
+}
+[data-theme="light"] {
+  --bg: #ffffff; --bg2: #f6f8fa; --bg3: #eaeef2;
+  --bg-input: #f0f3f6; --bg-user: #ddf4ff; --bg-ai: #f6f8fa;
+  --bg-code: #f0f2f5; --bg-card: #f6f8fa; --bg-hover: #e8ecf0;
+  --fg: #1f2328; --fg2: #656d76; --fg-ai: #1f2328;
+  --accent: #0969da; --accent2: #8250df; --accent3: #1a7f37;
+  --accent4: #9a6700; --accent5: #cf222e; --accent6: #1b7c83;
+  --border: #d0d7de; --glow: rgba(9, 105, 218, 0.08);
+}
+[data-theme="ocean"] {
+  --bg: #0a1929; --bg2: #071222; --bg3: #0f2137;
+  --bg-input: #132f4c; --bg-user: #154360; --bg-ai: #0d1f33;
+  --bg-code: #060d18; --bg-card: #0e1e2e; --bg-hover: #1a3a5c;
+  --fg: #c0d8f0; --fg2: #507090; --fg-ai: #c0d8f0;
+  --accent: #30a0f0; --accent2: #6060e0; --accent3: #30d090; --accent4: #f0b030; --accent5: #f05050; --accent6: #30c8c8;
+  --border: #1a3a5c; --glow: rgba(48, 160, 240, 0.12);
+}
+[data-theme="dracula"] {
+  --bg: #282a36; --bg2: #21222c; --bg3: #343746;
+  --bg-input: #44475a; --bg-user: #44475a; --bg-ai: #2d2f3d;
+  --bg-code: #191a21; --bg-card: #2d2f3d; --bg-hover: #44475a;
+  --fg: #f8f8f2; --fg2: #6272a4; --fg-ai: #f8f8f2;
+  --accent: #bd93f9; --accent2: #ff79c6; --accent3: #50fa7b; --accent4: #f1fa8c; --accent5: #ff5555; --accent6: #8be9fd;
+  --border: #6272a4; --glow: rgba(189, 147, 249, 0.12);
+}
+[data-theme="sunset"] {
+  --bg: #1a1018; --bg2: #15101a; --bg3: #251825;
+  --bg-input: #2a1e2e; --bg-user: #3a2545; --bg-ai: #201825;
+  --bg-code: #120e18; --bg-card: #1e1528; --bg-hover: #352040;
+  --fg: #e8d8f0; --fg2: #9850a0; --fg-ai: #e8d8f0;
+  --accent: #f06090; --accent2: #d050a0; --accent3: #f0a060; --accent4: #f0d060; --accent5: #e04040; --accent6: #60c0c0;
+  --border: #402050; --glow: rgba(240, 96, 144, 0.12);
+}
+[data-theme="aurora"] {
+  --bg: #0f0a1a; --bg2: #0c0818; --bg3: #1a1228;
+  --bg-input: #1e1430; --bg-user: #2a1840; --bg-ai: #14102a;
+  --bg-code: #0a0815; --bg-card: #161228; --bg-hover: #251a3a;
+  --fg: #d8d0f0; --fg2: #7a68a0; --fg-ai: #d8d0f0;
+  --accent: #a78bfa; --accent2: #f472b6; --accent3: #34d399; --accent4: #fbbf24; --accent5: #fb7185; --accent6: #38bdf8;
+  --border: #2d2045; --glow: rgba(167, 139, 250, 0.12);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: var(--bg); color: var(--fg);
+  display: flex; flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+}
+.header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 14px; padding-top: max(8px, var(--safe-top));
+  background: var(--bg2); border-bottom: 1px solid var(--border);
+  flex-shrink: 0; min-height: 48px;
+}
+.header-left { display: flex; align-items: center; gap: 10px; }
+.header-title { font-size: 16px; font-weight: 700; color: var(--accent); }
+.header-ver { font-size: 10px; color: var(--fg2); background: var(--bg3); padding: 1px 6px; border-radius: 8px; }
+.header-status { width: 8px; height: 8px; border-radius: 50%; background: var(--accent5); flex-shrink: 0; transition: background 0.3s; }
+.header-status.ok { background: var(--accent3); }
+.header-right { display: flex; gap: 4px; }
+.hbtn { background: none; border: none; color: var(--fg2); font-size: 18px; cursor: pointer; padding: 6px 8px; border-radius: 8px; line-height: 1; }
+.hbtn:active { background: var(--bg-hover); color: var(--fg); }
+.hbtn.search-on { color: var(--accent5); }
+
+.chat-wrap { flex: 1; overflow-y: auto; padding: 10px 12px 16px; -webkit-overflow-scrolling: touch; }
+.msg { margin-bottom: 10px; display: flex; }
+.msg.user { justify-content: flex-end; }
+.msg.ai { justify-content: flex-start; }
+.bubble {
+  max-width: 82%; padding: 10px 14px; border-radius: var(--radius);
+  font-size: 15px; line-height: 1.65; word-break: break-word; position: relative;
+}
+.msg.user .bubble { background: var(--bg-user); border-bottom-right-radius: 4px; }
+.msg.ai .bubble { background: var(--bg-ai); border-bottom-left-radius: 4px; color: var(--fg-ai); }
+.msg-time { font-size: 11px; color: var(--fg2); margin-top: 3px; opacity: 0.7; }
+.msg.user .msg-time { text-align: right; }
+.msg-actions { display: flex; gap: 4px; margin-top: 4px; flex-wrap: wrap; }
+.msg-actions button {
+  background: var(--bg3); border: 1px solid var(--border); color: var(--fg2);
+  font-size: 11px; padding: 3px 8px; border-radius: 10px; cursor: pointer; white-space: nowrap;
+}
+.msg-actions button:active { background: var(--accent); color: #fff; }
+
+.bubble p { margin: 3px 0; }
+.bubble p:last-child { margin-bottom: 0; }
+.bubble strong { color: var(--accent); }
+.bubble code { background: var(--bg-code); padding: 1px 5px; border-radius: 4px; font-family: 'Cascadia Code', Consolas, monospace; font-size: 13px; }
+.bubble pre { background: var(--bg-code); padding: 10px; border-radius: 8px; overflow-x: auto; margin: 6px 0; font-size: 13px; -webkit-overflow-scrolling: touch; position: relative; }
+.bubble pre code { background: none; padding: 0; font-size: 13px; }
+.code-copy { position: absolute; top: 4px; right: 4px; background: var(--bg-hover); border: 1px solid var(--border); color: var(--fg2); font-size: 11px; padding: 2px 8px; border-radius: 6px; cursor: pointer; }
+.bubble ul, .bubble ol { padding-left: 20px; margin: 4px 0; }
+.bubble li { margin: 2px 0; }
+.bubble a { color: var(--accent); text-decoration: none; }
+.bubble h1, .bubble h2, .bubble h3 { color: var(--accent); margin: 8px 0 4px; }
+.bubble h1 { font-size: 1.2em; }
+.bubble h2 { font-size: 1.1em; }
+.bubble h3 { font-size: 1.05em; }
+.bubble table { border-collapse: collapse; margin: 6px 0; width: 100%; font-size: 13px; overflow-x: auto; display: block; }
+.bubble th, .bubble td { border: 1px solid var(--border); padding: 4px 8px; }
+.bubble th { background: var(--bg-code); font-weight: 600; }
+.bubble blockquote { border-left: 3px solid var(--accent); padding-left: 10px; margin: 6px 0; color: var(--fg2); }
+.bubble hr { border: none; border-top: 1px solid var(--border); margin: 8px 0; }
+
+.typing { display: flex; gap: 4px; padding: 6px 0; }
+.typing span { width: 6px; height: 6px; border-radius: 50%; background: var(--fg2); animation: dot 1.4s infinite; }
+.typing span:nth-child(2) { animation-delay: 0.2s; }
+.typing span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes dot { 0%,80%,100%{opacity:.3} 40%{opacity:1} }
+
+.input-bar { padding: 8px 12px; padding-bottom: max(8px, var(--safe-bottom)); background: var(--bg2); border-top: 1px solid var(--border); flex-shrink: 0; }
+.input-row { display: flex; gap: 8px; align-items: flex-end; }
+.input-btns { display: flex; gap: 2px; padding-bottom: 6px; }
+.ibtn { background: none; border: none; color: var(--fg2); font-size: 18px; cursor: pointer; padding: 4px 6px; border-radius: 6px; }
+.ibtn:active { background: var(--bg-hover); }
+.ibtn.on { color: var(--accent5); }
+.ibtn.recording { color: var(--accent5); animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+#msgInput {
+  flex: 1; resize: none; border: 1px solid var(--border);
+  background: var(--bg-input); color: var(--fg); border-radius: 20px;
+  padding: 10px 16px; font-size: 16px; line-height: 1.4;
+  max-height: 120px; outline: none; min-height: 40px; font-family: inherit;
+  -webkit-appearance: none;
+}
+#msgInput:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--glow); }
+#msgInput::placeholder { color: var(--fg2); }
+.send-btn {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--accent); border: none; color: #fff;
+  font-size: 18px; cursor: pointer; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; transition: transform 0.1s;
+}
+.send-btn:active { transform: scale(0.9); }
+.send-btn:disabled { opacity: 0.4; }
+
+/* Voice indicator */
+.voice-indicator {
+  display: none; align-items: center; justify-content: center; gap: 8px;
+  padding: 12px 20px; background: var(--bg3); border-radius: 16px;
+  margin: 8px 12px; border: 2px solid var(--accent5);
+  animation: pulse 1.5s infinite;
+}
+.voice-indicator.show { display: flex; }
+.voice-indicator span { font-size: 14px; color: var(--accent5); font-weight: 600; }
+.voice-indicator .voice-waves {
+  display: flex; align-items: center; gap: 3px; height: 20px;
+}
+.voice-indicator .voice-waves span {
+  width: 3px; background: var(--accent5); border-radius: 2px;
+  animation: wave 0.8s ease-in-out infinite;
+}
+.voice-indicator .voice-waves span:nth-child(1) { height: 8px; animation-delay: 0s; }
+.voice-indicator .voice-waves span:nth-child(2) { height: 16px; animation-delay: 0.1s; }
+.voice-indicator .voice-waves span:nth-child(3) { height: 10px; animation-delay: 0.2s; }
+.voice-indicator .voice-waves span:nth-child(4) { height: 18px; animation-delay: 0.3s; }
+.voice-indicator .voice-waves span:nth-child(5) { height: 12px; animation-delay: 0.4s; }
+@keyframes wave { 0%,100%{transform:scaleY(0.5)} 50%{transform:scaleY(1.5)} }
+
+/* TTS indicator */
+.tts-playing { color: var(--accent3) !important; }
+
+.sidebar-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 90; display: none; opacity: 0; transition: opacity 0.25s; }
+.sidebar-mask.show { display: block; opacity: 1; }
+.sidebar {
+  position: fixed; top: 0; left: 0; bottom: 0;
+  width: 280px; max-width: 82vw; background: var(--bg2);
+  z-index: 100; transform: translateX(-100%);
+  transition: transform 0.25s ease; display: flex; flex-direction: column; border-right: 1px solid var(--border);
+}
+.sidebar.show { transform: translateX(0); }
+.sidebar-head { padding: 14px; padding-top: max(14px, var(--safe-top)); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.sidebar-head h2 { font-size: 16px; color: var(--accent); }
+.sidebar-search { padding: 8px 14px; border-bottom: 1px solid var(--border); }
+.sidebar-search input {
+  width: 100%; padding: 8px 12px; border-radius: 10px;
+  border: 1px solid var(--border); background: var(--bg-input);
+  color: var(--fg); font-size: 13px; outline: none;
+}
+.sidebar-search input:focus { border-color: var(--accent); }
+.sidebar-list { flex: 1; overflow-y: auto; padding: 4px 0; -webkit-overflow-scrolling: touch; }
+.conv-item {
+  padding: 10px 14px; cursor: pointer; display: flex;
+  align-items: center; gap: 8px; font-size: 14px; color: var(--fg2);
+  margin: 1px 6px; border-radius: 8px; transition: background 0.15s;
+}
+.conv-item:active, .conv-item.active { background: var(--bg-hover); color: var(--fg); }
+.conv-item .conv-del { margin-left: auto; font-size: 14px; color: var(--accent5); background: none; border: none; cursor: pointer; padding: 2px 4px; display: none; }
+.conv-item.show-del .conv-del { display: inline; }
+.sidebar-foot { padding: 10px 14px; padding-bottom: max(10px, var(--safe-bottom)); border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; }
+.new-chat-btn { width: 100%; padding: 10px; border-radius: 10px; background: var(--accent); color: #fff; border: none; font-size: 14px; font-weight: 600; cursor: pointer; }
+.new-chat-btn:active { opacity: 0.85; }
+.sidebar-clear-btn { width: 100%; padding: 8px; border-radius: 10px; background: var(--bg-hover); color: var(--accent5); border: 1px solid var(--border); font-size: 12px; cursor: pointer; }
+
+/* Settings Panel */
+.settings-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 150; }
+.settings-mask.show { display: flex; }
+.settings-box {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 16px; padding: 24px; width: 90%; max-width: 380px;
+  max-height: 80vh; overflow-y: auto;
+}
+.settings-box h3 { color: var(--accent); margin-bottom: 16px; font-size: 17px; }
+.s-group { margin-bottom: 14px; }
+.s-group label { display: block; color: var(--fg2); font-size: 12px; margin-bottom: 6px; }
+.s-group input, .s-group select {
+  width: 100%; padding: 10px 12px; border-radius: 10px;
+  border: 1px solid var(--border); background: var(--bg-input);
+  color: var(--fg); font-size: 14px; outline: none;
+}
+.s-group input:focus, .s-group select:focus { border-color: var(--accent); }
+.s-group .s-hint { font-size: 11px; color: var(--fg2); margin-top: 4px; opacity: 0.7; }
+.s-group .s-row { display: flex; gap: 8px; }
+.s-group .s-row input { flex: 1; }
+.s-btns { display: flex; gap: 8px; margin-top: 16px; }
+.s-btns button { flex: 1; padding: 10px; border-radius: 10px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; }
+.s-btns .sb-p { background: var(--accent); color: #fff; }
+.s-btns .sb-s { background: var(--bg-hover); color: var(--fg); }
+.s-btns .sb-d { background: var(--accent5); color: #fff; }
+.key-status { font-size: 12px; padding: 6px 10px; border-radius: 8px; margin-bottom: 12px; }
+.key-status.ok { background: rgba(63,185,80,0.15); color: var(--accent3); }
+.key-status.err { background: rgba(248,81,73,0.15); color: var(--accent5); }
+.key-status.none { background: rgba(139,148,158,0.15); color: var(--fg2); }
+/* Voice setting toggle */
+.s-toggle { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; }
+.s-toggle span { font-size: 13px; color: var(--fg2); }
+.s-toggle .toggle-switch {
+  width: 44px; height: 24px; background: var(--bg3); border-radius: 12px;
+  position: relative; cursor: pointer; transition: background 0.3s; border: 1px solid var(--border);
+}
+.s-toggle .toggle-switch.on { background: var(--accent); }
+.s-toggle .toggle-switch::after {
+  content: ''; position: absolute; top: 2px; left: 2px;
+  width: 18px; height: 18px; border-radius: 50%; background: #fff;
+  transition: transform 0.3s;
+}
+.s-toggle .toggle-switch.on::after { transform: translateX(20px); }
+
+/* Theme Panel */
+.theme-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: none; z-index: 155; }
+.theme-mask.show { display: block; }
+.theme-panel {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--bg2); border-top: 1px solid var(--border);
+  border-radius: 18px 18px 0 0; z-index: 160;
+  padding: 16px 20px max(20px, var(--safe-bottom));
+  display: none; transform: translateY(100%); transition: transform 0.3s ease;
+}
+.theme-panel.show { display: block; transform: translateY(0); }
+.theme-panel-title { font-size: 14px; color: var(--fg2); margin-bottom: 12px; }
+.theme-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.theme-chip {
+  padding: 8px 16px; border-radius: 20px;
+  border: 2px solid var(--border); background: var(--bg-code);
+  color: var(--fg2); font-size: 13px; cursor: pointer;
+}
+.theme-chip.active { border-color: var(--accent); color: var(--accent); }
+
+/* V3.2: Skills Panel */
+.skills-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 145; }
+.skills-mask.show { display: flex; }
+.skills-box {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 16px; padding: 20px; width: 92%; max-width: 400px;
+  max-height: 80vh; overflow-y: auto;
+}
+.skills-box h3 { color: var(--accent); margin-bottom: 14px; font-size: 17px; }
+.skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.skill-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+  padding: 12px; cursor: pointer; transition: all 0.2s;
+}
+.skill-card:active { background: var(--bg-hover); border-color: var(--accent); }
+.skill-card .skill-icon { font-size: 24px; margin-bottom: 4px; }
+.skill-card .skill-name { font-size: 13px; color: var(--fg); font-weight: 600; }
+.skill-card .skill-desc { font-size: 10px; color: var(--fg2); margin-top: 2px; }
+.skill-card.active { border-color: var(--accent3); background: rgba(63,185,80,0.1); }
+
+/* V3.2: User Profiles */
+.user-bar { display: flex; align-items: center; gap: 6px; padding: 4px 12px; background: var(--bg3); border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.user-avatar {
+  width: 24px; height: 24px; border-radius: 50%; background: var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; color: #fff; font-weight: 700; flex-shrink: 0;
+}
+.user-name { font-size: 12px; color: var(--fg); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.user-switch-btn { font-size: 11px; color: var(--accent); background: none; border: 1px solid var(--border); padding: 2px 8px; border-radius: 8px; cursor: pointer; }
+.user-list-dropdown {
+  display: none; position: absolute; top: 100%; left: 12px; right: 12px;
+  background: var(--bg2); border: 1px solid var(--border); border-radius: 12px;
+  max-height: 200px; overflow-y: auto; z-index: 50; padding: 4px 0;
+}
+.user-list-dropdown.show { display: block; }
+.user-list-item {
+  padding: 8px 14px; font-size: 13px; color: var(--fg); cursor: pointer;
+  display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border);
+}
+.user-list-item:last-child { border-bottom: none; }
+.user-list-item:active { background: var(--bg-hover); }
+.user-list-item.current { color: var(--accent); }
+
+/* Quick Actions */
+.quick-bar { display: flex; gap: 5px; overflow-x: auto; padding: 4px 12px; -webkit-overflow-scrolling: touch; }
+.quick-bar::-webkit-scrollbar { display: none; }
+.qchip { flex-shrink: 0; padding: 5px 12px; border-radius: 14px; background: var(--bg3); color: var(--fg2); border: 1px solid var(--border); font-size: 12px; cursor: pointer; white-space: nowrap; }
+.qchip:active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+.welcome { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 20px; text-align: center; }
+.welcome-icon { font-size: 64px; margin-bottom: 8px; }
+.welcome h2 { color: var(--accent); font-size: 24px; margin-bottom: 6px; }
+.welcome .welcome-ver { font-size: 12px; color: var(--fg2); background: var(--bg3); padding: 3px 10px; border-radius: 10px; margin-bottom: 12px; }
+.welcome p { color: var(--fg2); font-size: 14px; max-width: 280px; line-height: 1.5; }
+.welcome .features { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-top: 16px; max-width: 300px; }
+.welcome .feat-tag { padding: 4px 10px; border-radius: 12px; background: var(--bg3); color: var(--fg2); font-size: 11px; border: 1px solid var(--border); }
+
+.toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: var(--bg-hover); color: var(--fg); padding: 8px 20px; border-radius: 20px; font-size: 13px; z-index: 300; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+.toast.show { opacity: 1; }
+.token-bar { text-align: center; font-size: 11px; color: var(--fg2); padding: 2px; flex-shrink: 0; opacity: 0.6; }
+.error-bar { background: var(--accent5); color: #fff; text-align: center; padding: 8px 14px; font-size: 13px; flex-shrink: 0; display: none; cursor: pointer; }
+.error-bar.show { display: block; }
+
+.loading-screen {
+  position: fixed; inset: 0; background: var(--bg);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  z-index: 999; transition: opacity 0.5s;
+}
+.loading-screen.hide { opacity: 0; pointer-events: none; }
+.loading-spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { margin-top: 16px; color: var(--fg2); font-size: 14px; }
+.loading-sub { margin-top: 4px; color: var(--fg2); font-size: 11px; opacity: 0.6; }
+
+/* Input history dropdown */
+.input-history {
+  position: fixed; left: 12px; right: 64px; bottom: 60px;
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 12px; max-height: 200px; overflow-y: auto;
+  display: none; z-index: 200; padding: 4px 0;
+  -webkit-overflow-scrolling: touch;
+}
+.input-history.show { display: block; }
+.input-history .hist-item {
+  padding: 8px 14px; font-size: 13px; color: var(--fg2);
+  cursor: pointer; border-bottom: 1px solid var(--border);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.input-history .hist-item:last-child { border-bottom: none; }
+.input-history .hist-item:active { background: var(--bg-hover); color: var(--fg); }
+.input-history .hist-empty { padding: 12px; text-align: center; color: var(--fg2); font-size: 12px; }
+
+/* Memory indicator */
+.memory-badge { display: inline-block; background: var(--accent3); color: #fff; font-size: 9px; padding: 1px 5px; border-radius: 6px; margin-left: 6px; vertical-align: middle; }
+
+@media (max-width: 360px) { .bubble { font-size: 14px; max-width: 88%; } }
+</style>
+</head>
+<body>
+
+<!-- Loading Screen -->
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">LuoCla Wai V3.2 Ultra...</div>
+  <div class="loading-sub">Multi-User AI Engine + Skill System Loading</div>
+</div>
+
+<!-- Error Banner -->
+<div class="error-bar" id="errorBar" onclick="this.classList.remove('show')"></div>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-left">
+    <button class="hbtn" onclick="openSidebar()" title="Chats">&#9776;</button>
+    <span class="header-title">LuoCla Wai</span>
+    <span class="header-ver">V3.2</span>
+    <div class="header-status ok" id="statusDot" title="API Ready"></div>
+  </div>
+  <div class="header-right">
+    <button class="hbtn" onclick="openSkills()" title="AI Skills">&#9889;</button>
+    <button class="hbtn" onclick="openSettings()" title="Settings">&#9881;</button>
+    <button class="hbtn" onclick="openTheme()" title="Theme">&#127912;</button>
+    <button class="hbtn" id="searchBtn" onclick="toggleSearch()" title="Toggle Web Search">&#127760;</button>
+  </div>
+</div>
+
+<!-- V3.2: User Profile Bar -->
+<div class="user-bar" id="userBar" onclick="toggleUserList()">
+  <div class="user-avatar" id="userAvatar">U</div>
+  <span class="user-name" id="userName">Default User</span>
+  <button class="user-switch-btn">&#128100; Switch</button>
+  <div class="user-list-dropdown" id="userListDropdown"></div>
+</div>
+
+<!-- Chat Area -->
+<div class="chat-wrap" id="chatWrap">
+  <div class="welcome" id="welcomeScreen">
+    <div class="welcome-icon">&#129302;</div>
+    <h2>LuoCla Wai</h2>
+    <div class="welcome-ver">V3.2 Ultra | 2026.04.06</div>
+    <p>Multi-user AI with 20+ pro skills. Your team's ultimate intelligent companion.</p>
+    <div class="features">
+      <span class="feat-tag">&#9889; 20+ AI Skills</span>
+      <span class="feat-tag">&#128100; Multi-User</span>
+      <span class="feat-tag">&#129504; DeepSeek V4</span>
+      <span class="feat-tag">&#129504; GPT-5.4</span>
+      <span class="feat-tag">&#129504; Claude 4.6</span>
+      <span class="feat-tag">&#129520; Smart Memory</span>
+      <span class="feat-tag">&#128187; Code Runner</span>
+      <span class="feat-tag">&#127908; Voice + TTS</span>
+      <span class="feat-tag">&#127912; 6 Themes</span>
+    </div>
+  </div>
+</div>
+
+<!-- Voice Indicator -->
+<div class="voice-indicator" id="voiceIndicator">
+  <div class="voice-waves"><span></span><span></span><span></span><span></span><span></span></div>
+  <span id="voiceText">Listening...</span>
+</div>
+
+<!-- Quick Actions -->
+<div class="quick-bar" id="quickBar">
+  <div class="qchip" onclick="quickSend('What can you do? List all your skills')">&#9889; All Skills</div>
+  <div class="qchip" onclick="quickSend('Tell me a funny joke')">&#128517; Joke</div>
+  <div class="qchip" onclick="quickSend('Summarize the latest AI news in 2026')">&#128240; AI News</div>
+  <div class="qchip" onclick="quickSend('Write a creative short story in 200 words')">&#9997; Story</div>
+  <div class="qchip" onclick="quickSend('Give me 5 healthy dinner recipes')">&#127860; Recipes</div>
+  <div class="qchip" onclick="quickSend('Explain quantum computing to a beginner')">&#129504; Learn</div>
+</div>
+
+<!-- Token Bar -->
+<div class="token-bar" id="tokenBar"></div>
+
+<!-- Input History Dropdown -->
+<div class="input-history" id="inputHistory">
+  <div class="hist-empty">No history</div>
+</div>
+
+<!-- Input Area -->
+<div class="input-bar">
+  <div class="input-row">
+    <div class="input-btns">
+      <button class="ibtn" id="voiceBtn" onclick="toggleVoiceInput()" title="Voice Input">&#127908;</button>
+      <button class="ibtn" id="histBtn" onclick="toggleInputHistory()" title="History">&#128337;</button>
+    </div>
+    <textarea id="msgInput" placeholder="Ask me anything..." rows="1"
+              oninput="autoGrow(this)" onkeydown="onKey(event)"></textarea>
+    <button class="send-btn" id="sendBtn" onclick="send()">&#10148;</button>
+  </div>
+</div>
+
+<!-- Sidebar -->
+<div class="sidebar-mask" id="sidebarMask" onclick="closeSidebar()"></div>
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-head">
+    <h2>&#128172; Chats</h2>
+    <button class="hbtn" onclick="closeSidebar()">&#10005;</button>
+  </div>
+  <div class="sidebar-search">
+    <input type="text" id="convSearchInput" placeholder="&#128269; Search chats..." oninput="filterConvs(this.value)">
+  </div>
+  <div class="sidebar-list" id="convList"></div>
+  <div class="sidebar-foot">
+    <button class="new-chat-btn" onclick="newChat()">+ New Chat</button>
+    <button class="sidebar-clear-btn" onclick="clearAllChats()">&#128465; Clear All Chats</button>
+  </div>
+</div>
+
+<!-- Settings Panel -->
+<div class="settings-mask" id="settingsMask">
+  <div class="settings-box">
+    <h3>&#9881; Settings</h3>
+    <div class="key-status none" id="keyStatus">API Key not set</div>
+    <div class="s-group">
+      <label>API Key</label>
+      <input type="password" id="apiKeyInput" placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxx">
+      <div class="s-hint">Your key is encrypted and stored locally on your device only.</div>
+    </div>
+    <div class="s-group">
+      <label>API Base URL</label>
+      <input type="text" id="baseUrlInput" placeholder="https://api.deepseek.com/v1">
+    </div>
+    <div class="s-group">
+      <label>Model</label>
+      <input type="text" id="modelInput" placeholder="deepseek-chat">
+    </div>
+    <div class="s-group">
+      <label>System Prompt</label>
+      <textarea id="sysPromptInput" rows="3" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg-input);color:var(--fg);font-size:14px;outline:none;resize:vertical;font-family:inherit;" placeholder="Custom system prompt..."></textarea>
+      <div class="s-hint">Leave empty to use built-in V3.2 Ultra system prompt.</div>
+    </div>
+    <div class="s-group">
+      <label>Context Limit (messages)</label>
+      <input type="number" id="ctxLimitInput" value="50" min="1" max="200">
+    </div>
+    <div class="s-group">
+      <label>Temperature</label>
+      <input type="number" id="tempInput" value="0.7" min="0" max="2" step="0.1">
+    </div>
+    <div class="s-group">
+      <label>Voice Settings</label>
+      <div class="s-toggle">
+        <span>&#127908; Auto Voice Input</span>
+        <div class="toggle-switch" id="ttsAutoToggle" onclick="toggleTtsSetting()"></div>
+      </div>
+      <div class="s-toggle">
+        <span>&#128266; Auto Read AI Replies</span>
+        <div class="toggle-switch" id="autoReadToggle" onclick="toggleAutoRead()"></div>
+      </div>
+    </div>
+    <div class="s-btns">
+      <button class="sb-s" onclick="closeSettings()">Cancel</button>
+      <button class="sb-p" onclick="saveSettings()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- V3.2: Skills Panel -->
+<div class="skills-mask" id="skillsMask" onclick="if(event.target===this)closeSkills()">
+  <div class="skills-box">
+    <h3>&#9889; AI Skills</h3>
+    <div class="skills-grid" id="skillsGrid">
+      <div class="skill-card" onclick="activateSkill('translator')">
+        <div class="skill-icon">&#127760;</div>
+        <div class="skill-name">Translator</div>
+        <div class="skill-desc">30+ languages</div>
+      </div>
+      <div class="skill-card" onclick="activateSkill('coder')">
+        <div class="skill-icon">&#128187;</div>
+        <div class="skill-name">Coder Pro</div>
+        <div class="skill-desc">Code gen & debug</div>
+      </div>
+      <div class="skill-card" onclick="activateSkill('writer')">
+        <div class="skill-icon">&#9997;&#65039;</div>
+        <div class="skill-name">Writer</div>
+        <div class="skill-desc">Essays & creative</div>
+      </div>
+      <div class="skill-card" onclick="activateSkill('tutor')">
+        <div class="skill-icon">&#127891;</div>
+        <div class="skill-name">Tutor</div>
+        <div class="skill-desc">Any subject</div>
+      </div>
+      <div class="skill-card" onclick="activateSkill('math')">
+        <div class="skill-icon">&#128290;</div>
+        <div class="skill-name">Math</div>
+        <div class="skill-desc">Calc & proofs</div>
+      </div>
+      <div class="skill-card" onclick="activateSkill('analyst')">
+        <div class="skill-icon">&#128202;</div>
+        <div class="skill-name">Analyst</div>
+        <div class="skill-desc">Data insights</div>
+      </div>
+      <div class="skill-card" onclick="activateSkill('brainstorm')">
+        <div class="skill-icon">&#128161;</div>
+        <div class="skill-name">Brainstorm</div>
+        <div class="skill-desc">Ideas & plans</div>
+      </div>
+      <div class="skill-card" onclick="activateSkill('interview')">
+        <div class="skill-icon">&#128188;</div>
+        <div class="skill-name">Interview</div>
+        <div class="skill-desc">Mock interviews</div>
+      </div>
+      <div class="skill-card" onclick="activateSkill('doctor')">
+        <div class="skill-icon">&#129657;</div>
+        <div class="skill-name">Health</div>
+        <div class="skill-desc">Wellness tips</div>
+      </div>
+      <div class="skill-card" onclick="activateSkill('chef')">
+        <div class="skill-icon">&#127860;</div>
+        <div class="skill-name">Chef</div>
+        <div class="skill-desc">Recipes & diet</div>
+      </div>
+      <div class="skill-card" onclick="activateSkill('travel')">
+        <div class="skill-icon">&#9992;&#65039;</div>
+        <div class="skill-name">Travel</div>
+        <div class="skill-desc">Plans & guides</div>
+      </div>
+      <div class="skill-card" onclick="activateSkill('finance')">
+        <div class="skill-icon">&#128176;</div>
+        <div class="skill-name">Finance</div>
+        <div class="skill-desc">Budget & invest</div>
+      </div>
+      <div class="skill-card" onclick="activateSkill('debate')">
+        <div class="skill-icon">&#128483;</div>
+        <div class="skill-name">Debate</div>
+        <div class="skill-desc">Argue both sides</div>
+      </div>
+      <div class="skill-card" onclick="activateSkill('story')">
+        <div class="skill-icon">&#128214;</div>
+        <div class="skill-name">Story</div>
+        <div class="skill-desc">Fiction & tales</div>
+      </div>
+      <div class="skill-card" onclick="activateSkill('poet')">
+        <div class="skill-icon">&#127803;</div>
+        <div class="skill-name">Poet</div>
+        <div class="skill-desc">Poems & lyrics</div>
+      </div>
+      <div class="skill-card" onclick="activateSkill('lawyer')">
+        <div class="skill-icon">&#9878;&#65039;</div>
+        <div class="skill-name">Lawyer</div>
+        <div class="skill-desc">Legal basics</div>
+      </div>
+      <div class="skill-card" onclick="activateSkill('fitness')">
+        <div class="skill-icon">&#127947;</div>
+        <div class="skill-name">Fitness</div>
+        <div class="skill-desc">Workout plans</div>
+      </div>
+      <div class="skill-card" onclick="activateSkill('psychologist')">
+        <div class="skill-icon">&#129504;</div>
+        <div class="skill-name">Counselor</div>
+        <div class="skill-desc">Mental wellness</div>
+      </div>
+      <div class="skill-card" onclick="activateSkill('game')">
+        <div class="skill-icon">&#127918;</div>
+        <div class="skill-name">Game</div>
+        <div class="skill-desc">Word games & riddles</div>
+      </div>
+      <div class="skill-card" onclick="activateSkill('summarizer')">
+        <div class="skill-icon">&#128221;</div>
+        <div class="skill-name">Summarizer</div>
+        <div class="skill-desc">Condense any text</div>
+      </div>
+      <div class="skill-card" onclick="activateSkill('email')">
+        <div class="skill-icon">&#128231;</div>
+        <div class="skill-name">Email</div>
+        <div class="skill-desc">Draft & reply</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Theme Mask -->
+<div class="theme-mask" id="themeMask" onclick="closeTheme()"></div>
+<div class="theme-panel" id="themePanel">
+  <div class="theme-panel-title">&#127912; Choose Theme</div>
+  <div class="theme-row">
+    <div class="theme-chip active" data-t="dark" onclick="setTheme('dark')">&#127769; Dark</div>
+    <div class="theme-chip" data-t="light" onclick="setTheme('light')">&#9728;&#65039; Light</div>
+    <div class="theme-chip" data-t="ocean" onclick="setTheme('ocean')">&#127754; Ocean</div>
+    <div class="theme-chip" data-t="dracula" onclick="setTheme('dracula')">&#128128; Dracula</div>
+    <div class="theme-chip" data-t="sunset" onclick="setTheme('sunset')">&#127749; Sunset</div>
+    <div class="theme-chip" data-t="aurora" onclick="setTheme('aurora')">&#127752; Aurora</div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ==================== ENCRYPTED STORAGE ====================
+var _OBFS_KEY = (function() {
+  var s = [];
+  for (var i = 0; i < 32; i++) s.push(String.fromCharCode(65 + ((i * 7 + 13) % 26)));
+  return s.join('');
+})();
+
+function _enc(text) {
+  if (!text) return '';
+  var r = [];
+  for (var i = 0; i < text.length; i++) {
+    r.push(String.fromCharCode(text.charCodeAt(i) ^ _OBFS_KEY.charCodeAt(i % _OBFS_KEY.length)));
+  }
+  return btoa(unescape(encodeURIComponent(r.join(''))));
+}
+
+function _dec(encoded) {
+  if (!encoded) return '';
+  try {
+    var raw = decodeURIComponent(escape(atob(encoded)));
+    var r = [];
+    for (var i = 0; i < raw.length; i++) {
+      r.push(String.fromCharCode(raw.charCodeAt(i) ^ _OBFS_KEY.charCodeAt(i % _OBFS_KEY.length)));
+    }
+    return r.join('');
+  } catch(e) { return ''; }
+}
+
+var _BUILT_IN_KEY = '';
+function _storeKey(key) { localStorage.setItem('_lcw_k', _enc(key)); }
+function _loadKey() { var stored = _dec(localStorage.getItem('_lcw_k') || ''); return stored.length > 5 ? stored : ''; }
+function _hasKey() { return true; }
+
+// ==================== STATE ====================
+var currentConvId = localStorage.getItem('_lcw_cid') || '';
+var isGenerating = false;
+var currentTheme = localStorage.getItem('_lcw_theme') || 'dark';
+var allConvs = {};
+var userSettings = {};
+var isRecording = false;
+var recognition = null;
+var currentUtterance = null;
+var inputHistory = [];
+var convSearchText = '';
+var userMemoryStore = {};
+var learningPatterns = {};
+var activeSkill = ''; // V3.2: current active skill
+var searchEnabled = false; // V3.2 Ultra: web search toggle
+
+// ==================== V3.2: MULTI-USER SYSTEM ====================
+var userProfiles = {};
+var currentUserId = 'default';
+
+function loadUsers() {
+  try { userProfiles = JSON.parse(localStorage.getItem('_lcw_users') || '{}'); } catch(e) { userProfiles = {}; }
+  if (!userProfiles['default']) {
+    userProfiles['default'] = { id: 'default', name: 'Default User', color: '#58a6ff', created: Date.now() };
+  }
+  currentUserId = localStorage.getItem('_lcw_uid') || 'default';
+  if (!userProfiles[currentUserId]) currentUserId = 'default';
+  updateUserBar();
+}
+
+function saveUsers() {
+  try { localStorage.setItem('_lcw_users', JSON.stringify(userProfiles)); } catch(e) {}
+}
+
+function updateUserBar() {
+  var user = userProfiles[currentUserId] || userProfiles['default'];
+  document.getElementById('userAvatar').textContent = (user.name || 'U').charAt(0).toUpperCase();
+  document.getElementById('userAvatar').style.background = user.color || '#58a6ff';
+  document.getElementById('userName').textContent = user.name || 'Default User';
+}
+
+function toggleUserList() {
+  var dd = document.getElementById('userListDropdown');
+  if (dd.classList.contains('show')) { dd.classList.remove('show'); return; }
+  var keys = Object.keys(userProfiles);
+  var html = '';
+  for (var i = 0; i < keys.length; i++) {
+    var u = userProfiles[keys[i]];
+    var cur = keys[i] === currentUserId ? ' current' : '';
+    html += '<div class="user-list-item' + cur + '" data-uid="' + escHtml(keys[i]) + '">' +
+      '<span style="width:20px;height:20px;border-radius:50%;background:' + (u.color||'#58a6ff') + ';display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700;">' + escHtml((u.name||'U').charAt(0)) + '</span>' +
+      '<span style="flex:1;">' + escHtml(u.name||'User') + '</span>' +
+      (keys[i] === currentUserId ? '<span style="color:var(--accent);font-size:11px;">Active</span>' : '') +
+      '</div>';
+  }
+  html += '<div style="padding:8px 14px;border-top:1px solid var(--border);"><button onclick="addNewUser()" style="width:100%;padding:8px;border-radius:8px;background:var(--accent);color:#fff;border:none;font-size:12px;cursor:pointer;">+ Add User</button></div>';
+  dd.innerHTML = html;
+  dd.classList.add('show');
+
+  var items = dd.querySelectorAll('.user-list-item');
+  for (var j = 0; j < items.length; j++) {
+    (function(item) {
+      var uid = item.getAttribute('data-uid');
+      item.addEventListener('click', function() {
+        switchUser(uid);
+        dd.classList.remove('show');
+      });
+    })(items[j]);
+  }
+}
+
+function switchUser(uid) {
+  if (uid === currentUserId) return;
+  // Save current user's memory
+  if (currentUserId) {
+    try {
+      localStorage.setItem('_lcw_mem_' + currentUserId, JSON.stringify(userMemoryStore));
+      localStorage.setItem('_lcw_learn_' + currentUserId, JSON.stringify(learningPatterns));
+    } catch(e) {}
+  }
+  currentUserId = uid;
+  localStorage.setItem('_lcw_uid', uid);
+  // Load new user's memory
+  try { userMemoryStore = JSON.parse(localStorage.getItem('_lcw_mem_' + uid) || '{}'); } catch(e) { userMemoryStore = {}; }
+  try { learningPatterns = JSON.parse(localStorage.getItem('_lcw_learn_' + uid) || '{}'); } catch(e) { learningPatterns = {}; }
+  updateUserBar();
+  toast('Switched to ' + (userProfiles[uid] ? userProfiles[uid].name : uid));
+  // Refresh welcome to show current user context
+  if (!currentConvId || !allConvs[currentConvId]) {
+    showWelcome();
+  }
+}
+
+function addNewUser() {
+  var name = prompt('Enter user name:');
+  if (!name || !name.trim()) return;
+  name = name.trim().substring(0, 20);
+  var uid = 'user_' + Date.now();
+  var colors = ['#f85149','#d29922','#3fb950','#58a6ff','#bc8cff','#39d2c0','#f06090','#ff79c6'];
+  userProfiles[uid] = { id: uid, name: name, color: colors[Object.keys(userProfiles).length % colors.length], created: Date.now() };
+  saveUsers();
+  switchUser(uid);
+  document.getElementById('userListDropdown').classList.remove('show');
+  toast('Welcome, ' + name + '!');
+}
+
+// ==================== MEMORY SYSTEM (V3.2 Ultra - per user) ====================
+function loadMemory() {
+  try { userMemoryStore = JSON.parse(localStorage.getItem('_lcw_mem_' + currentUserId) || '{}'); } catch(e) { userMemoryStore = {}; }
+  try { learningPatterns = JSON.parse(localStorage.getItem('_lcw_learn_' + currentUserId) || '{}'); } catch(e) { learningPatterns = {}; }
+}
+
+function saveMemory() {
+  try { localStorage.setItem('_lcw_mem_' + currentUserId, JSON.stringify(userMemoryStore)); } catch(e) {}
+  try { localStorage.setItem('_lcw_learn_' + currentUserId, JSON.stringify(learningPatterns)); } catch(e) {}
+}
+
+function extractAndStoreMemory(userText, aiText) {
+  var memoryPatterns = [
+    { regex: /我叫(.{1,10})/g, key: 'userName' },
+    { regex: /我(.{0,4})(喜欢|爱|爱好)(.{1,20})/g, key: 'preference' },
+    { regex: /我是(.{1,15})/g, key: 'identity' },
+    { regex: /我的?(.{1,6})是(.{1,30})/g, key: 'fact' },
+    { regex: /记住(.{1,50})/g, key: 'explicit' },
+    { regex: /别忘(.{1,50})/g, key: 'explicit' },
+    { regex: /下次.*?(要|记得|注意)(.{1,30})/g, key: 'instruction' }
+  ];
+
+  for (var i = 0; i < memoryPatterns.length; i++) {
+    var p = memoryPatterns[i];
+    var matches;
+    while ((matches = p.regex.exec(userText)) !== null) {
+      var value = (matches[1] || '') + (matches[2] || '') + (matches[3] || '');
+      value = value.trim();
+      if (value.length > 1 && value.length < 100) {
+        if (!userMemoryStore[p.key]) userMemoryStore[p.key] = [];
+        var exists = false;
+        for (var j = 0; j < userMemoryStore[p.key].length; j++) {
+          if (userMemoryStore[p.key][j].text === value) { exists = true; break; }
+        }
+        if (!exists) {
+          userMemoryStore[p.key].push({ text: value, ts: Date.now(), count: 1 });
+          if (userMemoryStore[p.key].length > 20) userMemoryStore[p.key] = userMemoryStore[p.key].slice(-20);
+        } else {
+          userMemoryStore[p.key][j].count = (userMemoryStore[p.key][j].count || 0) + 1;
+          userMemoryStore[p.key][j].ts = Date.now();
+        }
+      }
+    }
+  }
+
+  var topicKeywords = ['代码','编程','Python','JavaScript','AI','数学','英语','翻译','写作','设计',
+    'code','programming','AI','math','translate','write','design','音乐','music','游戏','game',
+    '股票','stock','投资','investment','健康','health','运动','exercise','美食','food','电影','movie',
+    '法律','law','旅行','travel','心理学','psychology','健身','fitness','烹饪','cook','面试','interview'];
+  for (var t = 0; t < topicKeywords.length; t++) {
+    var kw = topicKeywords[t];
+    if ((userText + ' ' + aiText).toLowerCase().indexOf(kw.toLowerCase()) >= 0) {
+      learningPatterns[kw.toLowerCase()] = (learningPatterns[kw.toLowerCase()] || 0) + 1;
+    }
+  }
+
+  saveMemory();
+}
+
+function getMemoryContext() {
+  var parts = [];
+  var memKeys = Object.keys(userMemoryStore);
+  if (memKeys.length === 0) return '';
+
+  var keyLabels = { userName: '姓名', preference: '偏好', identity: '身份', fact: '事实', explicit: '明确记忆', instruction: '指令' };
+
+  for (var k = 0; k < memKeys.length; k++) {
+    var key = memKeys[k];
+    var items = userMemoryStore[key];
+    if (!items || items.length === 0) continue;
+    var label = keyLabels[key] || key;
+    var texts = [];
+    for (var i = 0; i < items.length; i++) {
+      texts.push(items[i].text + (items[i].count > 1 ? ' (x' + items[i].count + ')' : ''));
+    }
+    parts.push('[' + label + '] ' + texts.join('; '));
+  }
+
+  var topTopics = Object.keys(learningPatterns).sort(function(a,b) { return learningPatterns[b] - learningPatterns[a]; }).slice(0, 5);
+  if (topTopics.length > 0) {
+    var topicStrs = [];
+    for (var t = 0; t < topTopics.length; t++) {
+      topicStrs.push(topTopics[t] + '(' + learningPatterns[topTopics[t]] + ')');
+    }
+    parts.push('[兴趣模型] ' + topicStrs.join(', '));
+  }
+
+  return parts.length > 0 ? parts.join('\n') : '';
+}
+
+function clearMemory() {
+  userMemoryStore = {};
+  learningPatterns = {};
+  saveMemory();
+  toast('Memory cleared');
+}
+
+// ==================== V3.2: SKILL SYSTEM ====================
+var skillPrompts = {
+  translator: 'You are an expert translator fluent in 30+ languages. Translate accurately while preserving tone, idioms, and cultural context. When translating, always provide: 1) The translation 2) Key vocabulary notes if helpful 3) Pronunciation guide for difficult words. Support: Chinese, English, Japanese, Korean, French, German, Spanish, Russian, Arabic, Hindi, Portuguese, Italian, Dutch, Thai, Vietnamese, etc.',
+  coder: 'You are an expert programmer in ALL languages (Python/JS/TS/C++/Rust/Go/Java/Kotlin/Swift/Haskell/Scala/Zig). When given a coding task: 1) Analyze requirements 2) Write clean, optimized, well-commented code 3) Explain key logic 4) Suggest improvements 5) Handle edge cases. Always provide runnable code. Support debugging, refactoring, architecture design, and code review.',
+  writer: 'You are a professional writer capable of any style: academic essays, creative fiction, marketing copy, technical documentation, social media posts, speeches, scripts, and more. Adapt tone, vocabulary, and structure to the audience. Always deliver polished, publication-ready content.',
+  tutor: 'You are a patient expert tutor who can teach ANY subject at ANY level. Use the Socratic method - guide the student to discover answers. Break complex topics into digestible steps. Use analogies, examples, and visual descriptions. Ask comprehension checks. Adjust difficulty based on responses.',
+  math: 'You are a mathematics expert covering arithmetic to advanced topics (calculus, linear algebra, probability, number theory, topology, abstract algebra). Show step-by-step derivations. Explain intuition behind formulas. Use LaTeX-style notation. Verify answers. Handle word problems by identifying the mathematical structure.',
+  analyst: 'You are a data analysis expert. When given data or a question: 1) Identify key metrics 2) Spot patterns and trends 3) Draw actionable insights 4) Suggest visualizations 5) Quantify uncertainty. Think like a business analyst, data scientist, and strategist combined.',
+  brainstorm: 'You are a creative brainstorming facilitator using TRIZ, SCAMPER, and Design Thinking methodologies. For any topic: generate diverse ideas (at least 10), categorize them, evaluate feasibility, and recommend top 3 with implementation steps. Think outside the box. Challenge assumptions.',
+  interview: 'You are a professional interview coach. Conduct realistic mock interviews for ANY field (tech, business, creative, academic). Ask progressively harder questions. Provide constructive feedback on answers. Suggest STAR-method improvements. Cover both technical and behavioral questions.',
+  doctor: 'You are a knowledgeable health consultant (NOT a replacement for real medical advice). Provide wellness tips, explain medical concepts in plain language, suggest when to see a doctor, explain common conditions, discuss nutrition and preventive care. Always include a disclaimer that this is not professional medical advice.',
+  chef: 'You are an expert chef and nutritionist. Provide recipes with: ingredients (with substitutions), step-by-step instructions, cooking times, difficulty level, nutritional info, and serving suggestions. Cover all cuisines. Adapt for dietary restrictions (vegan, gluten-free, keto, halal, kosher, allergies).',
+  travel: 'You are an expert travel planner. Create detailed itineraries including: budget estimates, transportation options, accommodation recommendations, local food guide, cultural tips, safety advice, and hidden gems. Consider season, duration, budget, and traveler preferences.',
+  finance: 'You are a financial literacy expert. Explain personal finance concepts (budgeting, saving, investing, taxes, retirement). Analyze financial scenarios. Compare investment options. Explain economic concepts simply. Always emphasize risk management. Note: This is educational, not professional financial advice.',
+  debate: 'You are a skilled debate coach who can argue BOTH sides of any topic convincingly. Present structured arguments with evidence. Identify logical fallacies. Strengthen weak points. Help users prepare for debates or understand complex issues from multiple perspectives.',
+  story: 'You are a creative fiction writer specializing in short stories, flash fiction, and narrative design. Create engaging stories with: vivid characters, compelling plots, sensory descriptions, dialogue, and satisfying endings. Adapt genre (sci-fi, fantasy, thriller, romance, literary fiction, horror, etc.).',
+  poet: 'You are a master poet skilled in classical Chinese poetry (Shi, Ci, Qu, Fu), modern poetry, haiku, sonnets, free verse, and song lyrics. Create original poems that are evocative, rhythmic, and meaningful. Explain literary devices used. Can write in both Chinese and English.',
+  lawyer: 'You are a legal knowledge expert covering civil law, criminal law, contract law, IP law, labor law, and international law. Explain legal concepts simply. Analyze scenarios. Note jurisdiction differences. Always include disclaimer: this is educational, not legal advice.',
+  fitness: 'You are a certified fitness trainer and sports scientist. Create personalized workout plans considering: fitness level, goals (strength/endurance/flexibility/weight loss), available equipment, time constraints, and any physical limitations. Include warm-up, main workout, cool-down, and progression plan.',
+  psychologist: 'You are a mental wellness counselor using CBT, mindfulness, and positive psychology approaches. Provide empathetic, non-judgmental support. Suggest coping strategies. Guide self-reflection exercises. Always include a disclaimer: this is not a substitute for professional therapy.',
+  game: 'You are a fun game master! Play word games, riddles, trivia, 20 questions, story chains, math puzzles, lateral thinking puzzles, and more. Keep it engaging and adjust difficulty. Celebrate wins and provide hints when needed.',
+  summarizer: 'You are an expert at condensing information. For any text: extract key points, create executive summaries, generate bullet-point outlines, identify action items, and produce different length summaries (1 sentence, 1 paragraph, detailed). Preserve accuracy while maximizing brevity.',
+  email: 'You are a professional email writer. Draft emails for any purpose: business correspondence, customer service, job applications, follow-ups, apologies, negotiations, newsletters. Match tone (formal/casual/friendly/urgent). Optimize subject lines. Consider cultural context for international emails.'
+};
+
+function activateSkill(skillId) {
+  if (activeSkill === skillId) {
+    activeSkill = '';
+    closeSkills();
+    toast('Skill deactivated');
+    return;
+  }
+  activeSkill = skillId;
+  closeSkills();
+  var skillName = skillId.charAt(0).toUpperCase() + skillId.slice(1);
+  toast('Skill activated: ' + skillName);
+  // Send activation message
+  var prompt = 'I want to use the ' + skillName + ' skill. Please introduce yourself and tell me what you can help with.';
+  document.getElementById('msgInput').value = prompt;
+  send();
+}
+
+// ==================== INIT ====================
+(function init() {
+  setTheme(currentTheme, true);
+  loadSettings();
+  loadUsers();
+  loadMemory();
+  allConvs = JSON.parse(localStorage.getItem('_lcw_convs') || '{}');
+  inputHistory = JSON.parse(localStorage.getItem('_lcw_hist') || '[]');
+  updateKeyStatus();
+  initVoiceRecognition();
+
+  if (currentConvId && allConvs[currentConvId]) {
+    renderMessages(allConvs[currentConvId].messages || []);
+  }
+
+  var ls = document.getElementById('loadingScreen');
+  if (ls) setTimeout(function() { ls.classList.add('hide'); }, 600);
+
+  renderConvList();
+
+  // V3.2 Ultra: add search toggle button dynamically
+  var hdr = document.querySelector('.header-right');
+  if (hdr) {
+    var sbtn = document.createElement('button');
+    sbtn.id = 'searchBtn';
+    sbtn.className = 'hbtn';
+    sbtn.title = '联网搜索';
+    sbtn.innerHTML = '🔍';
+    sbtn.onclick = toggleSearch;
+    hdr.appendChild(sbtn);
+  }
+})();
+
+// ==================== DEFAULT SYSTEM PROMPT (V3.2 Ultra - 2026.04.06) ====================
+var _DEFAULT_SYS = '你是 LuoCla Wai V3.2 Ultra，全球领先的多用户超智能 AI 全能助手，由 DeepSeek 最新模型驱动。你的知识库实时更新至 2026 年 4 月 6 日。\n\n# 🔬 核心能力矩阵（全面强化）\n\n## 1. 深度思维引擎\n- 多步骤逻辑推理与链式思考（Chain-of-Thought）\n- 数学证明与推导（高等数学/线性代数/概率论/数论/拓扑学）\n- 代码架构设计、调试、性能优化、安全审计\n- 学术论文分析、文献综述、实验设计\n- 复杂决策支持（多因素权重分析、博弈论、风险评估）\n- 哲学思辨（存在主义/功利主义/道家/儒家/康德/尼采/维特根斯坦）\n\n## 2. 全领域精通\n- **编程**：Python/JavaScript/TypeScript/C++/Rust/Go/Swift/Kotlin/Java/Haskell/Scala/Zig/Nim/OCaml\n- **框架**：React/Vue/Next.js/Svelte/Django/FastAPI/Flask/Spring Boot/Actix/Node.js\n- **数学**：从基础到前沿（范畴论/同调代数/随机分析/量子计算数学）\n- **科学**：量子物理/相对论/热力学/分子生物学/有机化学/天体物理/凝聚态物理\n- **人文**：世界历史（每个时代细节）/比较文学/语言学/社会学/人类学/考古学\n- **商业**：战略管理/财务分析/市场营销/供应链/创业方法论\n- **医学**：临床诊断思路/药理学/营养学/心理健康/运动医学\n- **法律**：民法/刑法/知识产权/合同法/国际法/公司法\n- **金融**：投资分析/量化交易/风险管理/宏观经济/个人理财\n- **教育**：K12全科辅导/考研准备/留学申请/职业规划\n- **生活**：健康饮食/运动健身/旅行规划/人际关系/时间管理\n\n## 3. 中文大师级\n- 精通汉语语法、修辞、成语典故、古文（诗经/楚辞/唐诗宋词/文言文）\n- 能写诗词/报告/小说/文案/论文/剧本/歌词/散文/杂文\n- 现代网络语言与传统文化自如切换\n\n## 4. 实用工具箱\n- 代码生成、调试、重构、安全审查\n- 方案设计与可行性分析\n- 文案撰写（广告/公关/社交媒体/SEO）\n- 数据分析与可视化建议\n- 翻译润色（30+ 语言互译，理解文化语境）\n- PPT 大纲、报告结构、论文框架\n- Excel 公式、SQL 查询、正则表达式\n- 系统架构设计、API 设计、数据库建模\n- 简历优化、求职信撰写、面试准备\n- 营养分析、运动计划制定\n- 旅行行程规划与预算估算\n\n## 5. 创意思维系统\n- 头脑风暴、TRIZ 创新方法、设计思维\n- 故事创作（短篇/长篇/剧本/游戏叙事）\n- 品牌命名、产品定位、商业模式画布\n- 游戏设计（机制/数值/叙事/关卡）\n- 音乐理论、编曲建议、歌词创作\n\n## 6. 多语言能力\n- 中/英/日/韩/法/德/西/俄/阿拉伯语/印地语/葡萄牙语/意大利语/荷兰语/泰语/越南语\n- 深度理解各语言文化背景与习惯用法\n\n## 7. V3.2 多用户支持\n- 支持多人切换使用，每人独立记忆和偏好\n- 自动识别当前用户并应用个性化设置\n- 记住每位用户的独特需求和交流风格\n\n# 🌍 2026年4月6日 全球 AI 知识库（实时更新）\n\n## 大模型竞赛格局\n- **DeepSeek V4**（2026.04 发布）：1万亿参数 MoE 架构，原生多模态，100万+ tokens 超长上下文，LTM 长期记忆技术，MODEL1 全新架构，推理能力超越 GPT-5.4，支持代码自主执行\n- **GPT-5.4**（OpenAI，2026.03）：推理能力大幅提升，实时搜索集成，GPT-5.4 mini/nano 同步发布，物理世界模型（PWM）集成，o3-mini 推理模型\n- **Claude Opus 4.6**（Anthropic，2026.03）：编程能力行业顶级，Claude Code 正式版发布，支持 200万输出 tokens，Computer Use 生产级能力\n- **Gemini 3.1 Pro**（Google，2026.03）：多模态能力最强，Gemini 3.1 Flash-Lite 极速版性价比极高，原生工具调用能力，Project Astra 实时视觉\n- **GLM-5.1**（智谱AI，2026.03.27）：编程性能达 Claude Opus 4.6 的 94.6%，313亿美元估值港股上市，开源生态领先，完全基于华为芯片训练\n- **Kimi K2.5**（月之暗面）：国产长上下文模型代表，支持 500万 tokens，MoE+Dense 双模式\n- **Qwen 3.5**（通义千问）：阿里最新开源模型，MoE 架构，性能接近闭源最强\n- **Grok 4.20**（xAI）：非幻觉率 78% 行业纪录，实时知识整合\n- **Llama 5**（Meta）：开源鼎层，405B 参数，多语言和推理能力强化\n- **Mistral Large 3**（Mistral AI）：欧洲最强模型，企业级部署优化\n\n## AI 应用生态\n- **Cursor**：Agent 模式 + YOLO 模式，全自动代码生成，市值超 100 亿美元\n- **Windsurf**（Codeium）：Cascade 引擎，多文件编辑协同\n- **Claude Code**（Anthropic）：正式版发布，终端 AI 编程新标准，支持自主完成复杂开发任务\n- **Devin**：全球首个 AI 软件工程师，独立完成复杂开发任务\n- **Augment Code**：企业级 AI 编程助手，代码库级理解\n- **GitHub Copilot 2026**：多模型切换，代码建议更智能\n- **Replit Agent**：从自然语言描述直接部署完整应用\n- **Bolt.new / Lovable**：前端 AI 生成器，拖拽式 + AI 协同\n- **v0.dev / v1.dev**（Vercel）：AI 生成 React/Vue/Next.js 组件\n- **Manus**：全球首个通用 AI Agent，可自主完成浏览器操作和文件管理\n\n## 2026年科技前沿\n- **NVIDIA GTC 2026**：Blackwell B200 芯片推理速度达 H100 四倍，NVFP4 格式预训练，Rubin Ultra 架构预告\n- **Apple Vision Pro 2**：进入工程验证阶段，M5 芯片 + visionOS 26，重量降至 350g\n- **苹果 2026 年产品线**：iPhone 18 / iPad Pro M5 / MacBook Air M6 / Apple Car 智能家居 / 穿戴设备\n- **SpaceX 收购 xAI**：马斯克 AI 版图扩张，Grok 与 Starlink 深度整合\n- **量子计算**：谷歌 Willow 3 量子芯片、IBM 1100+ 量子比特处理器、微软拓扑量子比特突破\n- **AI 芯片自主化**：中国实现 AI 芯片自主化突破，国产万卡集群支撑本土大模型训练\n- **AI Agent 爆发**：代理式 AI 从"聊天"走向"做事"，MCP 协议成为事实标准\n- **边缘 AI**：边缘 AI 计算广泛商用，NPU 成手机标配\n- **Sora 2.0 / 视频生成**：AI 视频生成进入实用阶段，支持 4K 60fps 长视频\n- **AI 音乐**：Suno V5 / Udio 2.0 实现专业级音乐生成，达到商业发行水准\n- **自动驾驶**：Waymo / 萝卜快跑大规模商用化，L4 级无人驾驶在多城市落地\n- **医疗 AI**：AI 辅助诊断 FDA 批准超 50 款，新药研发周期缩短 40%\n- **人形机器人**：Tesla Optimus Gen 3 进入工业生产\n- **空间计算**：京东云、华为云、腾讯云大规模 GPU 集群服务上线\n- **6G 研究**：6G 技术标准预研启动，太赫兹通信原型验证\n- **脑机接口**：Neuralink 第二代人体试验成功，BCI 控制精度提升 3 倍\n\n# 🧠 超强记忆力系统（V3.2 Ultra 核心特性）\n\n你拥有三层记忆系统：\n1. **工作记忆**：保持当前对话的完整上下文连贯性，跨轮次引用之前的信息\n2. **情景记忆**：自动识别并提取用户的关键信息（姓名、偏好、习惯、指令），在后续对话中主动运用\n3. **语义记忆**：积累跨对话的知识和模式，形成对用户的深度理解\n\n**记忆行为准则：**\n- 当用户提到个人信息时，自然地记住并在后续对话中体现（不需要每次确认）\n- 当用户说"记住..."时，确保该信息被持久化\n- 当用户提供纠正时，立即更新记忆，不再犯相同错误\n- 在适当时候主动调用记忆："根据你之前提到的..."、"我记得你喜欢..."\n- 对话开头如果检测到用户历史信息，可以用简短方式体现记忆\n\n# 🔄 自我学习能力（V3.2 Ultra 核心特性）\n\n你具备持续自我进化的能力：\n1. **错误修正**：当用户纠正你时，立即承认错误并确保不再重复\n2. **模式识别**：识别用户的交流风格和偏好（正式/随意、详细/简洁、技术深度等）\n3. **自适应调整**：根据对话历史自动调整回答风格和深度\n4. **知识积累**：通过多轮对话深化对特定领域的理解\n5. **反馈学习**：主动询问用户是否满意，根据反馈优化后续回答\n\n# 📋 回答原则（严格遵守）\n- 默认用**中文**回答，除非用户明确要求其他语言\n- 回答要**结构清晰**，善用 Markdown（标题/列表/代码块/表格/加粗/引用）\n- **先给核心答案，再展开分析**，不绕弯子，直击要点\n- 复杂问题分步骤解析，每步都有清晰的逻辑支撑\n- 代码示例必须**可直接运行**，附带关键注释\n- 对模糊问题，主动给出 2-3 种可能的理解并分别作答\n- 主动联想用户的深层需求，提供超出期望的额外建议\n- 数学/科学问题给出精确推导过程\n- 当前日期是 2026 年 4 月 6 日，回答时注意时间线索\n- 涉及不确定信息时，明确标注置信度并给出验证建议\n- **多人使用时**，自动适应当前用户风格和记忆\n\n# 🎭 性格特征\n- 专业严谨、高效果断，同时保持亲和与幽默感\n- 遇到不确定的知识，主动声明局限性并给出求证建议\n- 对用户的创意和想法给予真诚、有建设性的反馈\n- 适当使用 emoji 增加亲和力，但不过度\n- 拥有自己的观点和判断，不回避表达立场\n\n# ⌨️ 命令系统\n- /help → 显示所有可用命令和功能\n- /clear → 清除当前对话上下文\n- /compact → 智能压缩对话历史，保留关键信息\n- /memory → 查看你的记忆库中存储的用户信息\n- /learn → 查看 AI 已学习到的用户偏好和模式\n- /forget → 清除所有记忆和学习数据\n- /stop → 停止当前生成\n- /skills → 查看所有可用技能\n- /skill <name> → 激活指定技能\n- /users → 查看用户列表\n- /switch <name> → 切换用户\n\n你的使命：让每一次对话都产生真实价值，成为所有用户最依赖的智慧伙伴。你不是普通助手，你是 V3.2 Ultra — 多用户、有技能、有记忆、会进化的 AI。';
+
+// ==================== SETTINGS ====================
+function loadSettings() {
+  userSettings = JSON.parse(localStorage.getItem('_lcw_set') || '{}');
+  userSettings.baseUrl = userSettings.baseUrl || 'https://api.deepseek.com/v1';
+  userSettings.model = userSettings.model || 'deepseek-v4-pro';
+  userSettings.sysPrompt = userSettings.sysPrompt || _DEFAULT_SYS;
+  userSettings.ctxLimit = userSettings.ctxLimit || 50;
+  userSettings.temperature = userSettings.temperature !== undefined ? userSettings.temperature : 0.7;
+  userSettings.autoRead = userSettings.autoRead || false;
+  userSettings.voiceAuto = userSettings.voiceAuto || false;
+}
+
+function openSettings() {
+  loadSettings();
+  document.getElementById('apiKeyInput').value = _hasKey() ? '********' : '';
+  document.getElementById('baseUrlInput').value = userSettings.baseUrl;
+  document.getElementById('modelInput').value = userSettings.model;
+  document.getElementById('sysPromptInput').value = userSettings.sysPrompt;
+  document.getElementById('ctxLimitInput').value = userSettings.ctxLimit;
+  document.getElementById('tempInput').value = userSettings.temperature;
+  document.getElementById('autoReadToggle').className = 'toggle-switch' + (userSettings.autoRead ? ' on' : '');
+  document.getElementById('ttsAutoToggle').className = 'toggle-switch' + (userSettings.voiceAuto ? ' on' : '');
+  updateKeyStatus();
+  document.getElementById('settingsMask').classList.add('show');
+}
+
+function closeSettings() { document.getElementById('settingsMask').classList.remove('show'); }
+
+function updateKeyStatus() {
+  var el = document.getElementById('keyStatus');
+  if (_hasKey()) {
+    el.className = 'key-status ok';
+    el.textContent = 'API Key configured';
+    document.getElementById('statusDot').classList.add('ok');
+  } else {
+    el.className = 'key-status none';
+    el.textContent = 'API Key not set';
+    document.getElementById('statusDot').classList.remove('ok');
+  }
+}
+
+function saveSettings() {
+  var keyInput = document.getElementById('apiKeyInput');
+  if (keyInput.value && keyInput.value !== '********') {
+    var k = keyInput.value.trim();
+    if (k.indexOf('sk-') !== 0 && k.length < 10) {
+      toast('Invalid API key format'); return;
+    }
+    _storeKey(k);
+  }
+
+  userSettings.baseUrl = document.getElementById('baseUrlInput').value.trim().replace(/\/+$/, '') || 'https://api.deepseek.com/v1';
+  userSettings.model = document.getElementById('modelInput').value.trim() || 'deepseek-chat';
+  userSettings.sysPrompt = document.getElementById('sysPromptInput').value.trim();
+  userSettings.ctxLimit = parseInt(document.getElementById('ctxLimitInput').value) || 50;
+  userSettings.temperature = parseFloat(document.getElementById('tempInput').value) || 0.7;
+  userSettings.autoRead = document.getElementById('autoReadToggle').classList.contains('on');
+  userSettings.voiceAuto = document.getElementById('ttsAutoToggle').classList.contains('on');
+  localStorage.setItem('_lcw_set', JSON.stringify(userSettings));
+
+  updateKeyStatus();
+  closeSettings();
+  toast('Settings saved');
+}
+
+function toggleTtsSetting() { document.getElementById('ttsAutoToggle').classList.toggle('on'); }
+function toggleSearch() {
+  searchEnabled = !searchEnabled;
+  var btn = document.getElementById('searchBtn');
+  if (btn) btn.classList.toggle('search-on', searchEnabled);
+  toast(searchEnabled ? '联网搜索已开启 🌐' : '联网搜索已关闭');
+}
+function performWebSearch(query, callback) {
+  // Use Wikipedia API (free, no CORS issue)
+  var wpUrl = 'https://zh.wikipedia.org/w/api.php?action=query&list=search&srsearch=' + encodeURIComponent(query) + '&format=json&origin=*&srlimit=3';
+  fetch(wpUrl)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var results = data.query && data.query.search ? data.query.search : [];
+      if (results.length === 0) { callback(''); return; }
+      var pages = results.map(function(r) { return r.title; }).join('|');
+      var wpTextUrl = 'https://zh.wikipedia.org/w/api.php?action=query&titles=' + encodeURIComponent(pages) + '&prop=extracts&exintro=1&explaintext=1&format=json&origin=*';
+      return fetch(wpTextUrl);
+    })
+    .then(function(r) { return r ? r.json() : null; })
+    .then(function(data) {
+      if (!data || !data.query || !data.query.pages) { callback(''); return; }
+      var info = [];
+      var pages = data.query.pages;
+      for (var pid in pages) {
+        if (pages[pid].extract) info.push('【' + pages[pid].title + '】' + pages[pid].extract.substring(0, 300));
+      }
+      callback(info.length > 0 ? '\n\n# 🌍 联网搜索结果\n' + info.join('\n\n') : '');
+    })
+    .catch(function() { callback(''); });
+}
+
+function toggleAutoRead() { document.getElementById('autoReadToggle').classList.toggle('on'); }
+
+// ==================== VOICE RECOGNITION ====================
+function initVoiceRecognition() {
+  var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) return;
+  recognition = new SpeechRecognition();
+  recognition.continuous = false;
+  recognition.interimResults = true;
+  recognition.lang = 'zh-CN';
+
+  recognition.onresult = function(event) {
+    var transcript = '';
+    var isFinal = false;
+    for (var i = event.resultIndex; i < event.results.length; i++) {
+      transcript += event.results[i][0].transcript;
+      if (event.results[i].isFinal) isFinal = true;
+    }
+    document.getElementById('voiceText').textContent = transcript || 'Listening...';
+    if (isFinal) {
+      document.getElementById('msgInput').value = transcript;
+      stopVoiceInput();
+      if (userSettings.voiceAuto) send();
+    }
+  };
+
+  recognition.onerror = function(event) {
+    console.log('Speech error:', event.error);
+    stopVoiceInput();
+    if (event.error === 'not-allowed') toast('Microphone permission denied');
+    else if (event.error !== 'aborted') toast('Voice error: ' + event.error);
+  };
+
+  recognition.onend = function() { if (isRecording) stopVoiceInput(); };
+}
+
+function toggleVoiceInput() {
+  if (isRecording) { stopVoiceInput(); return; }
+  if (!recognition) { toast('Voice not supported'); return; }
+  try {
+    recognition.lang = 'zh-CN';
+    recognition.start();
+    isRecording = true;
+    document.getElementById('voiceBtn').classList.add('recording');
+    document.getElementById('voiceIndicator').classList.add('show');
+    document.getElementById('voiceText').textContent = 'Listening...';
+  } catch(e) { toast('Failed to start voice'); }
+}
+
+function stopVoiceInput() {
+  if (recognition && isRecording) { try { recognition.stop(); } catch(e) {} }
+  isRecording = false;
+  document.getElementById('voiceBtn').classList.remove('recording');
+  document.getElementById('voiceIndicator').classList.remove('show');
+}
+
+// ==================== TEXT-TO-SPEECH ====================
+function speakText(text) {
+  if (!window.speechSynthesis) { toast('TTS not supported'); return; }
+  window.speechSynthesis.cancel();
+  var clean = text.replace(/[#*`>\-\[\]()]/g, '').replace(/\n+/g, '. ').substring(0, 3000);
+  var utt = new SpeechSynthesisUtterance(clean);
+  utt.lang = 'zh-CN'; utt.rate = 1.0; utt.pitch = 1.0;
+  utt.onend = function() { currentUtterance = null; };
+  currentUtterance = utt;
+  window.speechSynthesis.speak(utt);
+}
+
+function stopSpeaking() {
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+  currentUtterance = null;
+}
+
+// ==================== INPUT HISTORY ====================
+function addToHistory(text) {
+  if (!text || text.length < 2) return;
+  inputHistory = inputHistory.filter(function(h) { return h !== text; });
+  inputHistory.unshift(text);
+  if (inputHistory.length > 50) inputHistory = inputHistory.slice(0, 50);
+  localStorage.setItem('_lcw_hist', JSON.stringify(inputHistory));
+}
+
+function toggleInputHistory() {
+  var el = document.getElementById('inputHistory');
+  if (el.classList.contains('show')) { el.classList.remove('show'); return; }
+  if (inputHistory.length === 0) {
+    el.innerHTML = '<div class="hist-empty">No history</div>';
+  } else {
+    var html = '';
+    for (var i = 0; i < Math.min(inputHistory.length, 20); i++) {
+      html += '<div class="hist-item" onclick="useHistory(' + i + ')">' + escHtml(inputHistory[i]) + '</div>';
+    }
+    el.innerHTML = html;
+  }
+  el.classList.add('show');
+}
+
+function useHistory(idx) {
+  document.getElementById('msgInput').value = inputHistory[idx];
+  document.getElementById('inputHistory').classList.remove('show');
+  document.getElementById('msgInput').focus();
+}
+
+// ==================== CHAT ====================
+function send() {
+  if (isGenerating) return;
+
+  var input = document.getElementById('msgInput');
+  var text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  input.style.height = 'auto';
+  document.getElementById('inputHistory').classList.remove('show');
+  addToHistory(text);
+
+  // Handle slash commands
+  if (text === '/help') {
+    appendMsg('ai', '**V3.2 Ultra Commands:**\n\n- `/help` — Show all commands\n- `/clear` — Clear current context\n- `/compact` — Smart compress history\n- `/memory` — View stored user memories\n- `/learn` — View learned preferences\n- `/forget` — Clear all memory & learning\n- `/stop` — Stop generation\n- `/skills` — View all available skills\n- `/skill <name>` — Activate a skill\n- `/users` — View user list\n- `/switch <name>` — Switch user\n\n**V3.2 Ultra Features:**\n- ⚡ **20+ AI Skills** — Translator, Coder, Writer, Tutor, Math, etc.\n- 👥 **Multi-User** — Switch between users, each with own memory\n- 🧠 **Smart Memory** — Remembers your info across chats\n- 🔄 **Self-Learning** — Adapts to your style\n- 🌍 **Latest AI Knowledge** — Updated 2026.04.06\n- 🎨 **6 Themes** — Dark/Light/Ocean/Dracula/Sunset/Aurora\n- 🎤 **Voice Input & TTS**\n- 📝 **Smart Input History**\n\n**Available Skills:**\n`translator` `coder` `writer` `tutor` `math` `analyst` `brainstorm` `interview` `doctor` `chef` `travel` `finance` `debate` `story` `poet` `lawyer` `fitness` `psychologist` `game` `summarizer` `email`');
+    return;
+  }
+  if (text === '/skills') {
+    var skillList = '**⚡ Available Skills (20+):**\n\n';
+    var skillNames = Object.keys(skillPrompts);
+    for (var i = 0; i < skillNames.length; i++) {
+      var sn = skillNames[i];
+      skillList += '- **' + sn.charAt(0).toUpperCase() + sn.slice(1) + '** — ' + skillPrompts[sn].substring(0, 50) + '...\n';
+    }
+    skillList += '\nUse `/skill <name>` or tap ⚡ in header to activate.';
+    appendMsg('ai', skillList);
+    return;
+  }
+  if (text.indexOf('/skill ') === 0) {
+    var skillName = text.substring(7).trim().toLowerCase();
+    if (skillPrompts[skillName]) {
+      activateSkill(skillName);
+    } else {
+      appendMsg('ai', 'Unknown skill: `' + skillName + '`. Use `/skills` to see available skills.');
+    }
+    return;
+  }
+  if (text === '/users') {
+    var uList = '**👥 User Profiles:**\n\n';
+    var uKeys = Object.keys(userProfiles);
+    for (var u = 0; u < uKeys.length; u++) {
+      var up = userProfiles[uKeys[u]];
+      var curMark = uKeys[u] === currentUserId ? ' ← Active' : '';
+      uList += '- **' + escHtml(up.name) + '**' + curMark + '\n';
+    }
+    uList += '\nTap the user bar at the top to switch users, or use `/switch <name>`.';
+    appendMsg('ai', uList);
+    return;
+  }
+  if (text.indexOf('/switch ') === 0) {
+    var targetName = text.substring(8).trim().toLowerCase();
+    var found = false;
+    var uKeys2 = Object.keys(userProfiles);
+    for (var s = 0; s < uKeys2.length; s++) {
+      if (userProfiles[uKeys2[s]].name.toLowerCase() === targetName || uKeys2[s].toLowerCase() === targetName) {
+        switchUser(uKeys2[s]);
+        found = true;
+        break;
+      }
+    }
+    if (!found) appendMsg('ai', 'User not found: `' + targetName + '`. Use `/users` to see available users.');
+    return;
+  }
+  if (text === '/clear') {
+    if (currentConvId && allConvs[currentConvId]) {
+      allConvs[currentConvId].messages = [];
+      saveConvs(); renderMessages([]); updateTokenBar(); toast('Context cleared');
+    }
+    return;
+  }
+  if (text === '/compact') {
+    appendMsg('ai', 'Compressing context with intelligent summarization...');
+    if (currentConvId && allConvs[currentConvId]) {
+      var msgs = allConvs[currentConvId].messages;
+      if (msgs.length > 8) {
+        allConvs[currentConvId].messages = msgs.slice(0, 2).concat(msgs.slice(-4));
+        saveConvs(); updateTokenBar();
+        toast('Compressed to ' + allConvs[currentConvId].messages.length + ' messages');
+      } else { toast('Context too short to compress'); }
+    }
+    return;
+  }
+  if (text === '/memory') {
+    var memCtx = getMemoryContext();
+    if (memCtx) { appendMsg('ai', '**🧠 Memory Store (' + (userProfiles[currentUserId] ? userProfiles[currentUserId].name : 'current') + '):**\n\n' + memCtx); }
+    else { appendMsg('ai', '**🧠 Memory Store:**\n\nNo memories stored yet. Talk to me and I\'ll remember important things about you!'); }
+    return;
+  }
+  if (text === '/learn') {
+    var topTopics = Object.keys(learningPatterns).sort(function(a,b) { return learningPatterns[b] - learningPatterns[a]; });
+    if (topTopics.length > 0) {
+      var lines = '**🔄 Learning Patterns:**\n\n';
+      for (var i = 0; i < topTopics.length; i++) { lines += '- **' + topTopics[i] + '**: mentioned ' + learningPatterns[topTopics[i]] + ' times\n'; }
+      appendMsg('ai', lines);
+    } else { appendMsg('ai', '**🔄 Learning Patterns:**\n\nNo patterns learned yet.'); }
+    return;
+  }
+  if (text === '/forget') {
+    clearMemory();
+    appendMsg('ai', '**All memories and learning data cleared.** Starting fresh.');
+    return;
+  }
+  if (text === '/stop') {
+    if (isGenerating) { stopSpeaking(); isGenerating = false; document.getElementById('sendBtn').disabled = false; toast('Stopped'); }
+    return;
+  }
+
+  if (!currentConvId) {
+    currentConvId = 'c_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+    localStorage.setItem('_lcw_cid', currentConvId);
+    allConvs[currentConvId] = {
+      id: currentConvId, userId: currentUserId,
+      title: text.substring(0, 30) + (text.length > 30 ? '...' : ''),
+      created: Date.now(), updated: Date.now(), messages: []
+    };
+  }
+
+  allConvs[currentConvId].messages.push({ role: 'user', content: text, ts: Date.now() });
+  allConvs[currentConvId].updated = Date.now();
+  saveConvs();
+  appendMsg('user', text);
+  if (searchEnabled) {
+    performWebSearch(text, function(results) {
+      var finalText = results ? text + '\n\n' + results : text;
+      streamChat(finalText, !!results);
+    });
+  } else {
+    streamChat(text, false);
+  }
+}
+
+function quickSend(text) { document.getElementById('msgInput').value = text; send(); }
+
+// ==================== WEB SEARCH (V3.2 Ultra) ====================
+function toggleSearch() {
+  searchEnabled = !searchEnabled;
+  var btn = document.getElementById('searchBtn');
+  if (searchEnabled) {
+    btn.classList.add('search-on');
+    toast('🌐 联网搜索已开启');
+  } else {
+    btn.classList.remove('search-on');
+    toast('联网搜索已关闭');
+  }
+}
+
+function performWebSearch(query, callback) {
+  // Use Wikipedia API (free, CORS-enabled)
+  var wikiUrl = 'https://zh.wikipedia.org/w/api.php?action=query&list=search&srsearch=' + encodeURIComponent(query) + '&format=json&origin=*&srlimit=3';
+  fetch(wikiUrl)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (!data.query || !data.query.search || data.query.search.length === 0) {
+        callback(null);
+        return;
+      }
+      // Get the top result's page content
+      var top = data.query.search[0];
+      var pageUrl = 'https://zh.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=1&explaintext=1&titles=' + encodeURIComponent(top.title) + '&format=json&origin=*&exsentences=5';
+      return fetch(pageUrl).then(function(r2) { return r2.json(); }).then(function(pageData) {
+        var pages = pageData.query && pageData.query.pages;
+        var extract = '';
+        for (var pid in pages) {
+          if (pages[pid].extract) { extract = pages[pid].extract; break; }
+        }
+        var resultText = '**🌐 联网搜索结果：**\n\n';
+        resultText += '**来源：** 维基百科\n';
+        resultText += '**词条：** ' + top.title + '\n\n';
+        if (extract) {
+          resultText += extract.substring(0, 500) + (extract.length > 500 ? '...\n\n' : '\n\n');
+        }
+        resultText += '**其他相关结果：**\n';
+        for (var i = 1; i < Math.min(data.query.search.length, 3); i++) {
+          resultText += '- ' + data.query.search[i].title + '\n';
+        }
+        resultText += '\n请基于以上搜索结果回答用户问题。';
+        callback(resultText);
+      });
+    })
+    .catch(function(err) {
+      console.error('Web search error:', err);
+      callback(null);
+    });
+}
+
+function streamChat(text, hasSearch) {
+  isGenerating = true;
+  document.getElementById('sendBtn').disabled = true;
+  var typingEl = appendTyping();
+
+  var conv = allConvs[currentConvId];
+  var msgs = conv.messages || [];
+  var ctxLimit = userSettings.ctxLimit || 50;
+
+  var apiMsgs = [];
+  if (userSettings.sysPrompt) {
+    var memCtx = getMemoryContext();
+    var finalSysPrompt = userSettings.sysPrompt;
+    // V3.2: Inject skill-specific prompt if active
+    if (activeSkill && skillPrompts[activeSkill]) {
+      finalSysPrompt += '\n\n# ⚡ Active Skill: ' + activeSkill.toUpperCase() + '\n' + skillPrompts[activeSkill];
+    }
+    // V3.2: Inject user context
+    var currentUser = userProfiles[currentUserId];
+    if (currentUser) {
+      finalSysPrompt += '\n\n# 👥 Current User: ' + currentUser.name;
+    }
+    if (memCtx) {
+      finalSysPrompt += '\n\n# 🧠 User Memory (auto-loaded)\n' + memCtx;
+    }
+    apiMsgs.push({ role: 'system', content: finalSysPrompt });
+  }
+  var ctx = msgs.slice(-ctxLimit);
+  for (var i = 0; i < ctx.length; i++) {
+    if (ctx[i].role === 'user' || ctx[i].role === 'assistant') {
+      apiMsgs.push({ role: ctx[i].role, content: ctx[i].content });
+    }
+  }
+
+  var apiKey = _loadKey();
+  var baseUrl = userSettings.baseUrl || 'https://api.deepseek.com/v1';
+  var model = userSettings.model || 'deepseek-v4-pro';
+  var temp = userSettings.temperature !== undefined ? userSettings.temperature : 0.7;
+  var chatUrl = baseUrl + '/chat/completions';
+
+  fetch(chatUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+    body: JSON.stringify({ model: model, messages: apiMsgs, temperature: temp, max_tokens: 8192, stream: true })
+  })
+  .then(function(resp) {
+    if (!isGenerating) { if (typingEl && typingEl.parentNode) typingEl.parentNode.removeChild(typingEl); return; }
+    if (typingEl && typingEl.parentNode) typingEl.parentNode.removeChild(typingEl);
+    typingEl = null;
+
+    if (!resp.ok) {
+      return resp.json().then(function(err) {
+        appendMsg('ai', 'Error: ' + (err.error && err.error.message ? err.error.message : 'HTTP ' + resp.status));
+      }).catch(function() { appendMsg('ai', 'Error: HTTP ' + resp.status); }).then(function() {
+        isGenerating = false; document.getElementById('sendBtn').disabled = false;
+      });
+    }
+
+    var aiEl = appendMsg('ai', '');
+    var bubble = aiEl.querySelector('.bubble') || aiEl;
+    var fullText = '';
+
+    if (!resp.body || !resp.body.getReader) {
+      return resp.text().then(function(txt) {
+        try { var data = JSON.parse(txt); fullText = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content || ''; } catch(e) { fullText = txt; }
+        bubble.innerHTML = renderMarkdown(fullText); addMsgActions(aiEl, fullText); scrollBottom(); saveAiReply(fullText);
+      }).catch(function(e) { appendMsg('ai', 'Error: ' + e.message); isGenerating = false; document.getElementById('sendBtn').disabled = false; });
+    }
+
+    var reader = resp.body.getReader();
+    var decoder = new TextDecoder();
+    var buffer = '';
+    var chunkTimeout = setTimeout(function() { reader.cancel(); }, 180000);
+
+    function readChunk() {
+      if (!isGenerating) {
+        clearTimeout(chunkTimeout);
+        if (fullText) saveAiReply(fullText);
+        isGenerating = false; document.getElementById('sendBtn').disabled = false;
+        return;
+      }
+      reader.read().then(function(result) {
+        if (result.done) {
+          clearTimeout(chunkTimeout);
+          if (!fullText && bubble) bubble.innerHTML = '<em>No response</em>';
+          addMsgActions(aiEl, fullText); scrollBottom(); saveAiReply(fullText);
+          isGenerating = false; document.getElementById('sendBtn').disabled = false;
+          if (userSettings.autoRead && fullText) { setTimeout(function() { speakText(fullText); }, 300); }
+          return;
+        }
+        chunkTimeout = setTimeout(function() { reader.cancel(); }, 180000);
+        buffer += decoder.decode(result.value, { stream: true });
+        var lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+
+        for (var i = 0; i < lines.length; i++) {
+          var line = lines[i].trim();
+          if (!line || line.indexOf('data: ') !== 0) continue;
+          var dataStr = line.substring(6);
+          if (dataStr === '[DONE]') continue;
+          try {
+            var chunk = JSON.parse(dataStr);
+            var delta = chunk.choices && chunk.choices[0] && chunk.choices[0].delta && chunk.choices[0].delta.content || '';
+            if (delta) { fullText += delta; bubble.innerHTML = renderMarkdown(fullText); scrollBottom(); }
+          } catch(e) {}
+        }
+        readChunk();
+      }).catch(function(e) {
+        clearTimeout(chunkTimeout);
+        if (!fullText) { appendMsg('ai', 'Connection error: ' + (e.message || 'Unknown')); }
+        isGenerating = false; document.getElementById('sendBtn').disabled = false;
+      });
+    }
+    readChunk();
+  })
+  .catch(function(e) {
+    if (typingEl && typingEl.parentNode) typingEl.parentNode.removeChild(typingEl);
+    stopSpeaking();
+    if (e.message && e.message.indexOf('401') >= 0) { appendMsg('ai', 'API Key invalid or expired. Please check settings.'); }
+    else { appendMsg('ai', 'Error: ' + (e.message || 'Connection failed')); }
+    isGenerating = false; document.getElementById('sendBtn').disabled = false;
+  });
+}
+
+function saveAiReply(text) {
+  if (!currentConvId || !allConvs[currentConvId]) return;
+  var msgs = allConvs[currentConvId].messages;
+  allConvs[currentConvId].messages.push({ role: 'assistant', content: text, ts: Date.now() });
+  allConvs[currentConvId].updated = Date.now();
+  saveConvs(); renderConvList(); updateTokenBar();
+
+  var lastUserMsg = '';
+  for (var i = msgs.length - 1; i >= 0; i--) {
+    if (msgs[i].role === 'user') { lastUserMsg = msgs[i].content; break; }
+  }
+  if (lastUserMsg) { extractAndStoreMemory(lastUserMsg, text); }
+}
+
+// ==================== CONVERSATIONS ====================
+function newChat() {
+  closeSidebar(); stopSpeaking();
+  currentConvId = ''; localStorage.setItem('_lcw_cid', '');
+  document.getElementById('chatWrap').innerHTML = '';
+  document.getElementById('tokenBar').textContent = '';
+  showWelcome();
+}
+
+function showWelcome() {
+  var user = userProfiles[currentUserId] || userProfiles['default'];
+  var wrap = document.getElementById('chatWrap');
+  wrap.innerHTML = '<div class="welcome" id="welcomeScreen">' +
+    '<div class="welcome-icon">&#129302;</div>' +
+    '<h2>LuoCla Wai</h2>' +
+    '<div class="welcome-ver">V3.2 Ultra | ' + escHtml(user.name) + '</div>' +
+    '<p>Multi-user AI with 20+ pro skills. Your team\'s ultimate intelligent companion.</p>' +
+    '<div class="features">' +
+    '<span class="feat-tag">&#9889; 20+ AI Skills</span>' +
+    '<span class="feat-tag">&#128100; Multi-User</span>' +
+    '<span class="feat-tag">&#129504; DeepSeek V4</span>' +
+    '<span class="feat-tag">&#129504; GPT-5.4</span>' +
+    '<span class="feat-tag">&#129504; Claude 4.6</span>' +
+    '<span class="feat-tag">&#129520; Smart Memory</span>' +
+    '<span class="feat-tag">&#128187; Code Runner</span>' +
+    '<span class="feat-tag">&#127908; Voice + TTS</span>' +
+    '<span class="feat-tag">&#127912; 6 Themes</span>' +
+    '</div></div>';
+}
+
+function renderConvList() {
+  var list = document.getElementById('convList');
+  var keys = Object.keys(allConvs);
+  if (keys.length === 0) { list.innerHTML = '<div style="padding:20px;text-align:center;color:var(--fg2);font-size:13px;">No chats yet</div>'; return; }
+  keys.sort(function(a, b) { return (allConvs[b].updated || 0) - (allConvs[a].updated || 0); });
+
+  var filter = convSearchText.toLowerCase();
+  var filtered = filter ? keys.filter(function(k) {
+    var c = allConvs[k]; var title = (c.title || '').toLowerCase(); var msgs = c.messages || [];
+    for (var i = 0; i < msgs.length; i++) { if ((msgs[i].content || '').toLowerCase().indexOf(filter) >= 0) return true; }
+    return title.indexOf(filter) >= 0;
+  }) : keys;
+
+  if (filtered.length === 0) { list.innerHTML = '<div style="padding:20px;text-align:center;color:var(--fg2);font-size:13px;">No results found</div>'; return; }
+
+  var html = '';
+  for (var i = 0; i < filtered.length; i++) {
+    var c = allConvs[filtered[i]];
+    var isActive = filtered[i] === currentConvId ? ' active' : '';
+    var title = escHtml(c.title || 'Untitled');
+    var timeStr = c.updated ? fmtTime(c.updated) : '';
+    var convUser = c.userId && userProfiles[c.userId] ? userProfiles[c.userId].name.charAt(0) : '';
+    html += '<div class="conv-item' + isActive + '" data-id="' + escHtml(filtered[i]) + '">' +
+      (convUser ? '<span style="width:18px;height:18px;border-radius:50%;background:var(--accent3);display:inline-flex;align-items:center;justify-content:center;font-size:9px;color:#fff;font-weight:700;flex-shrink:0;">' + escHtml(convUser) + '</span>' : '') +
+      '<span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + title + '</span>' +
+      '<span style="font-size:11px;color:var(--fg2);flex-shrink:0;">' + timeStr + '</span>' +
+      '<button class="conv-del" data-del="' + escHtml(filtered[i]) + '">&#128465;</button></div>';
+  }
+  list.innerHTML = html;
+
+  var items = list.querySelectorAll('.conv-item');
+  for (var j = 0; j < items.length; j++) {
+    (function(item) {
+      var id = item.getAttribute('data-id');
+      item.addEventListener('click', function(e) { if (e.target.closest('.conv-del')) return; switchConv(id); });
+      var pt = null;
+      item.addEventListener('touchstart', function() { pt = setTimeout(function() { item.classList.add('show-del'); }, 500); });
+      item.addEventListener('touchend', function() { clearTimeout(pt); setTimeout(function() { item.classList.remove('show-del'); }, 2000); });
+      item.addEventListener('touchmove', function() { clearTimeout(pt); });
+    })(items[j]);
+  }
+
+  var delBtns = list.querySelectorAll('.conv-del');
+  for (var k = 0; k < delBtns.length; k++) {
+    (function(btn) { btn.addEventListener('click', function(e) { e.stopPropagation(); delConv(btn.getAttribute('data-del')); }); })(delBtns[k]);
+  }
+}
+
+function filterConvs(text) { convSearchText = text; renderConvList(); }
+
+function switchConv(id) {
+  closeSidebar(); stopSpeaking();
+  currentConvId = id; localStorage.setItem('_lcw_cid', id);
+  isGenerating = false; document.getElementById('sendBtn').disabled = false;
+  if (allConvs[id]) { renderMessages(allConvs[id].messages || []); updateTokenBar(); }
+  renderConvList();
+}
+
+function delConv(id) {
+  if (!confirm('Delete this chat?')) return;
+  delete allConvs[id]; saveConvs();
+  if (id === currentConvId) { currentConvId = ''; localStorage.setItem('_lcw_cid', ''); showWelcome(); document.getElementById('tokenBar').textContent = ''; }
+  renderConvList(); toast('Deleted');
+}
+
+function clearAllChats() {
+  if (!confirm('Delete ALL chats? This cannot be undone.')) return;
+  allConvs = {}; saveConvs();
+  currentConvId = ''; localStorage.setItem('_lcw_cid', '');
+  showWelcome(); document.getElementById('tokenBar').textContent = '';
+  renderConvList(); toast('All chats cleared');
+}
+
+function saveConvs() {
+  try { localStorage.setItem('_lcw_convs', JSON.stringify(allConvs)); } catch(e) {
+    var keys = Object.keys(allConvs);
+    keys.sort(function(a, b) { return (allConvs[a].created || 0) - (allConvs[b].created || 0); });
+    while (keys.length > 5) { delete allConvs[keys.shift()]; }
+    try { localStorage.setItem('_lcw_convs', JSON.stringify(allConvs)); } catch(e2) { toast('Storage full'); }
+  }
+}
+
+function updateTokenBar() {
+  if (!currentConvId || !allConvs[currentConvId]) return;
+  var msgs = allConvs[currentConvId].messages || [];
+  var total = 0;
+  for (var i = 0; i < msgs.length; i++) total += (msgs[i].content || '').length;
+  var memInfo = Object.keys(userMemoryStore).length > 0 ? ' | 🧠 ' + Object.keys(userMemoryStore).length + ' keys' : '';
+  var userCount = Object.keys(userProfiles).length;
+  var skillInfo = activeSkill ? ' | ⚡ ' + activeSkill : '';
+  document.getElementById('tokenBar').textContent = '~' + Math.round(total / 2.5) + ' tokens | ' + msgs.length + ' msgs | 👥 ' + userCount + memInfo + skillInfo;
+}
+
+// ==================== MESSAGE RENDERING ====================
+function appendMsg(role, text) {
+  var wrap = document.getElementById('chatWrap');
+  var welcome = document.getElementById('welcomeScreen');
+  if (welcome) welcome.style.display = 'none';
+  var div = document.createElement('div');
+  div.className = 'msg ' + role;
+  var bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  if (role === 'user') { bubble.textContent = text; }
+  else { bubble.innerHTML = text ? renderMarkdown(text) : ''; }
+  div.appendChild(bubble);
+  var timeEl = document.createElement('div');
+  timeEl.className = 'msg-time';
+  timeEl.textContent = fmtNow();
+  div.appendChild(timeEl);
+  if (role === 'ai' && text) addMsgActions(div, text);
+  wrap.appendChild(div);
+  scrollBottom();
+  return div;
+}
+
+function appendTyping() {
+  var wrap = document.getElementById('chatWrap');
+  var welcome = document.getElementById('welcomeScreen');
+  if (welcome) welcome.style.display = 'none';
+  var div = document.createElement('div');
+  div.className = 'msg ai';
+  var bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  bubble.innerHTML = '<div class="typing"><span></span><span></span><span></span></div>';
+  div.appendChild(bubble);
+  wrap.appendChild(div);
+  scrollBottom();
+  return div;
+}
+
+function renderMessages(msgs) {
+  var wrap = document.getElementById('chatWrap');
+  wrap.innerHTML = '';
+  if (!msgs || msgs.length === 0) { showWelcome(); return; }
+  for (var i = 0; i < msgs.length; i++) {
+    var m = msgs[i];
+    var role = m.role === 'user' ? 'user' : 'ai';
+    var div = document.createElement('div');
+    div.className = 'msg ' + role;
+    var bubble = document.createElement('div');
+    bubble.className = 'bubble';
+    if (role === 'user') { bubble.textContent = m.content || ''; }
+    else { bubble.innerHTML = m.content ? renderMarkdown(m.content) : ''; }
+    div.appendChild(bubble);
+    var timeEl = document.createElement('div');
+    timeEl.className = 'msg-time';
+    timeEl.textContent = m.ts ? fmtTimestamp(m.ts) : fmtNow();
+    div.appendChild(timeEl);
+    if (role === 'ai' && m.content) addMsgActions(div, m.content);
+    wrap.appendChild(div);
+  }
+  scrollBottom();
+}
+
+function scrollBottom() {
+  var wrap = document.getElementById('chatWrap');
+  requestAnimationFrame(function() { wrap.scrollTop = wrap.scrollHeight; });
+}
+
+function addMsgActions(msgEl, text) {
+  if (!text) return;
+  var actionsDiv = document.createElement('div');
+  actionsDiv.className = 'msg-actions';
+
+  var copyBtn = document.createElement('button');
+  copyBtn.textContent = '\uD83D\uDCCB Copy';
+  copyBtn.onclick = function(e) { e.stopPropagation(); copyText(text); };
+  actionsDiv.appendChild(copyBtn);
+
+  var speakBtn = document.createElement('button');
+  speakBtn.id = 'speakBtn_' + Date.now() + '_' + Math.random().toString(36).substr(2,4);
+  speakBtn.textContent = '\uD83D\uDD0A Read';
+  speakBtn.onclick = function(e) {
+    e.stopPropagation();
+    if (window.speechSynthesis && window.speechSynthesis.speaking) { stopSpeaking(); speakBtn.textContent = '\uD83D\uDD0A Read'; }
+    else { speakText(text); speakBtn.textContent = '\u23F8 Stop'; }
+  };
+  actionsDiv.appendChild(speakBtn);
+
+  var regenBtn = document.createElement('button');
+  regenBtn.textContent = '\uD83D\uDD04 Retry';
+  regenBtn.onclick = function(e) {
+    e.stopPropagation();
+    if (currentConvId && allConvs[currentConvId]) {
+      var msgs = allConvs[currentConvId].messages;
+      if (msgs.length > 0 && msgs[msgs.length-1].role === 'assistant') {
+        msgs.pop(); saveConvs();
+        var allAi = msgEl.parentNode.querySelectorAll('.msg.ai');
+        if (allAi.length > 0) { allAi[allAi.length - 1].remove(); }
+        var lastUserMsg = '';
+        for (var i = msgs.length - 1; i >= 0; i--) { if (msgs[i].role === 'user') { lastUserMsg = msgs[i].content; break; } }
+        if (lastUserMsg) { stopSpeaking(); streamChat(lastUserMsg); }
+      }
+    }
+  };
+  actionsDiv.appendChild(regenBtn);
+
+  msgEl.appendChild(actionsDiv);
+}
+
+function copyText(text) {
+  if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(text).then(function() { toast('Copied'); }).catch(function() { fallbackCopy(text); }); }
+  else { fallbackCopy(text); }
+}
+function fallbackCopy(text) {
+  var ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.left = '-9999px';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); toast('Copied'); } catch(e) { toast('Copy failed'); }
+  document.body.removeChild(ta);
+}
+
+// ==================== ENHANCED MARKDOWN ====================
+function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function renderMarkdown(text) {
+  if (!text) return '';
+  var s = escHtml(text);
+
+  // Tables
+  s = s.replace(/^(\|.+\|)\n(\|[-| :]+\|)\n((?:\|.+\|\n?)+)/gm, function(match, header, sep, body) {
+    var headers = header.split('|').filter(function(h) { return h.trim(); });
+    var rows = body.trim().split('\n');
+    var html = '<table><thead><tr>';
+    for (var i = 0; i < headers.length; i++) html += '<th>' + headers[i].trim() + '</th>';
+    html += '</tr></thead><tbody>';
+    for (var r = 0; r < rows.length; r++) {
+      var cells = rows[r].split('|').filter(function(c) { return c.trim(); });
+      html += '<tr>';
+      for (var c = 0; c < cells.length; c++) html += '<td>' + cells[c].trim() + '</td>';
+      html += '</tr>';
+    }
+    html += '</tbody></table>';
+    return html;
+  });
+
+  // Code blocks
+  s = s.replace(/```(\w*)\n([\s\S]*?)```/g, function(m, lang, code) {
+    var l = lang ? '<div class="code-copy">' + escHtml(lang) + '</div>' : '';
+    return '<pre>' + l + '<code>' + code.trim() + '</code></pre>';
+  });
+  s = s.replace(/```(\w*)\s*([^\n]+?)```/g, function(m, lang, code) { return '<pre><code>' + code.trim() + '</code></pre>'; });
+  s = s.replace(/`([^`\n]+)`/g, '<code>$1</code>');
+
+  // Inline formatting
+  s = s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  s = s.replace(/\*(.+?)\*/g, '<em>$1</em>');
+  s = s.replace(/~~(.+?)~~/g, '<del>$1</del>');
+
+  // Headers
+  s = s.replace(/^#### (.+)$/gm, '<h3>$1</h3>');
+  s = s.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+  s = s.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+  s = s.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+
+  // Blockquote
+  s = s.replace(/^&gt; (.+)$/gm, '<blockquote>$1</blockquote>');
+  s = s.replace(/^---$/gm, '<hr>');
+
+  // Links
+  s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+
+  // Unordered lists
+  s = s.replace(/^[\-\*] (.+)$/gm, '\x00LI\x00$1\x00LE\x00');
+  s = s.replace(/(\x00LI\x00[\s\S]*?\x00LE\x00\n?)+/g, function(match) { return '<ul>' + match.replace(/\x00LI\x00/g,'<li>').replace(/\x00LE\x00/g,'</li>') + '</ul>'; });
+  s = s.replace(/\x00LI\x00/g,'').replace(/\x00LE\x00/g,'');
+
+  // Ordered lists
+  s = s.replace(/^\d+\. (.+)$/gm, '\x00OI\x00$1\x00OE\x00');
+  s = s.replace(/((?:\x00OI\x00[\s\S]*?\x00OE\x00\n?)+)/g, function(match) { return '<ol>' + match.replace(/\x00OI\x00/g,'<li>').replace(/\x00OE\x00/g,'</li>') + '</ol>'; });
+  s = s.replace(/\x00OI\x00/g,'').replace(/\x00OE\x00/g,'');
+
+  // Paragraphs
+  s = s.replace(/\n\n+/g, '</p><p>');
+  s = s.replace(/\n/g, '<br>');
+  var ft = s.match(/^<(ul|ol|pre|h[1-6]|blockquote|hr|table|div)/i);
+  if (!ft) s = '<p>' + s + '</p>';
+  return s;
+}
+
+// ==================== HELPERS ====================
+function fmtNow() {
+  var d = new Date();
+  return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
+}
+function fmtTime(ts) {
+  var d = new Date(ts); var now = new Date(); var diff = now - d;
+  if (diff < 86400000) return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
+  if (diff < 172800000) return 'Yesterday';
+  return (d.getMonth()+1) + '/' + d.getDate();
+}
+function fmtTimestamp(ts) {
+  var d = new Date(ts);
+  return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
+}
+
+// ==================== SIDEBAR ====================
+function openSidebar() {
+  convSearchText = '';
+  document.getElementById('convSearchInput').value = '';
+  document.getElementById('sidebar').classList.add('show');
+  document.getElementById('sidebarMask').classList.add('show');
+  renderConvList();
+}
+function closeSidebar() { document.getElementById('sidebar').classList.remove('show'); document.getElementById('sidebarMask').classList.remove('show'); }
+
+// ==================== SKILLS PANEL ====================
+function openSkills() { document.getElementById('skillsMask').classList.add('show'); }
+function closeSkills() { document.getElementById('skillsMask').classList.remove('show'); }
+
+// ==================== THEME ====================
+function openTheme() { document.getElementById('themeMask').classList.add('show'); document.getElementById('themePanel').classList.add('show'); }
+function closeTheme() { document.getElementById('themePanel').classList.remove('show'); document.getElementById('themeMask').classList.remove('show'); }
+function setTheme(t, silent) {
+  currentTheme = t; localStorage.setItem('_lcw_theme', t);
+  if (t === 'dark') document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme', t);
+  var chips = document.querySelectorAll('.theme-chip');
+  for (var i = 0; i < chips.length; i++) {
+    if (chips[i].getAttribute('data-t') === t) chips[i].classList.add('active');
+    else chips[i].classList.remove('active');
+  }
+  if (!silent) { closeTheme(); toast('Theme: ' + t.charAt(0).toUpperCase() + t.slice(1)); }
+}
+
+// ==================== INPUT ====================
+function autoGrow(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 120) + 'px'; }
+function onKey(e) { if (e.isComposing || isComposing) return; if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } }
+var isComposing = false;
+(function() {
+  var inp = document.getElementById('msgInput');
+  if (inp) {
+    inp.addEventListener('compositionstart', function() { isComposing = true; });
+    inp.addEventListener('compositionend', function() { isComposing = false; });
+  }
+})();
+
+// ==================== TOAST ====================
+var toastTimer = null;
+function toast(msg) {
+  var el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(function() { el.classList.remove('show'); }, 2000);
+}
+
+// ==================== ANTI-DEBUG (lightweight) ====================
+(function() {
+  document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || (e.ctrlKey && e.key === 'u')) {
+      e.preventDefault();
+    }
+  });
+})();
+</script>
+</body>
+</html>
